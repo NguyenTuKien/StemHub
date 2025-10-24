@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.resources/*.properties
+.m2/
+/logs

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/StemHub/.env.example">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/StemHub/.env.example" />
+              <option name="updatedContent" value="# Example environment variables for StemHub&#10;# Copy this file to .env and fill in your own values.&#10;&#10;# Database&#10;DB_URL=jdbc:sqlserver://localhost:1433;databaseName=stemhub;encrypt=true;trustServerCertificate=true&#10;DB_USERNAME=sa&#10;DB_PASSWORD=yourStrong(!)Password&#10;&#10;# JWT&#10;# At least 32 characters for HS256 security&#10;JWT_SECRET_KEY=please-change-me-to-a-long-random-secret-string-32chars-min&#10;JWT_EXPIRATION_MS=86400000&#10;&#10;# Cloudflare R2&#10;R2_ACCOUNT_ID=your-account-id&#10;R2_ACCESS_KEY=your-access-key&#10;R2_SECRET_KEY=your-secret-key&#10;R2_BUCKET=your-bucket-name&#10;# Endpoint should NOT include the bucket path. Example:&#10;#   Correct: https://&lt;account-id&gt;.r2.cloudflarestorage.com&#10;#   Wrong:   https://&lt;account-id&gt;.r2.cloudflarestorage.com/&lt;bucket&gt;&#10;R2_ENDPOINT_URL=https://&lt;account-id&gt;.r2.cloudflarestorage.com&#10;R2_PUBLIC_URL=https://pub-&lt;hash&gt;.r2.dev&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
