@@ -20,7 +20,7 @@ public class DocumentResponse {
     Integer downloadCount;
     Integer favoriteCount;
 
-    public DocumentResponse(Document document, int downloadCount, int favoriteCount) {
+    public DocumentResponse(Document document, int favoriteCount) {
         this.documentId = document != null ? document.getId() : null;
         this.title = document != null ? document.getTitle() : null;
         this.description = document != null ? document.getDescription() : null;
@@ -35,7 +35,7 @@ public class DocumentResponse {
         this.fileUrl = document != null ? document.getFilePath() : null;
         this.thumbnailUrl = document != null ? document.getThumbnailPath() : null;
         this.createdAt = document != null ? document.getCreateAt() : null;
-        this.downloadCount = downloadCount;
+        this.downloadCount = document != null ? document.getDownloadCount() : null;
         this.favoriteCount = favoriteCount;
     }
 }

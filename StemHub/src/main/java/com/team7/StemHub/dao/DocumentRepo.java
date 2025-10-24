@@ -17,8 +17,6 @@ public interface DocumentRepo extends JpaRepository<Document, UUID> {
     @Query("SELECT d FROM Document d ORDER BY SIZE(d.favoredByUsers) DESC")
     List<Document> findAllByOrderByFavoriteCountDesc();
 
-    Integer countDownloadsById(UUID documentId);
-
     Integer countFavoritesById(UUID documentId);
 
     List<Document> findByCourse(Course course);

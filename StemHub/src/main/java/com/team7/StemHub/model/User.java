@@ -41,7 +41,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "fullname", nullable = false)
+    @Column(name = "fullname", nullable = false, columnDefinition = "NVARCHAR(100)")
     private String fullname;
 
     @Column(name = "role", nullable = false)
@@ -65,12 +65,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "document_id")
     )
     private Set<Document> favoritesDocuments;
-
-    @ManyToMany
-    @JoinTable(
-            name = "download",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "document_id")
-    )
-    private Set<Document> downloadedDocuments;
 }

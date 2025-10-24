@@ -17,10 +17,6 @@ public class DocumentService {
 
     private final DocumentRepo documentRepo;
 
-    public int countDonwloads(UUID documentId) {
-        return documentRepo.countDownloadsById(documentId);
-    }
-
     public int countFavorites(UUID documentId) {
         return documentRepo.countFavoritesById(documentId);
     }
@@ -44,5 +40,11 @@ public class DocumentService {
 
     public List<Document> getDocumentsByCourse(Course course) {
         return documentRepo.findByCourse(course);
+    }
+
+    public void downloadDocument(UUID documentId) {
+        Document document = getDocumentById(documentId);
+        document.setDownloadCount(document.getDownloadCount() + 1);
+        documentRepo.save(document);
     }
 }

@@ -90,7 +90,6 @@ public class DocumentController {
     @GetMapping("/detail/{documentId}")
     public String viewDocumentDetail(@PathVariable UUID documentId, Model model) {
         Document document = documentService.getDocumentById(documentId);
-        int countDownloads = documentService.countDonwloads(documentId);
         int countFavorites = documentService.countFavorites(documentId);
         List<Document> relativeDocument = documentService.getDocumentsByCourse(document.getCourse());
         List<Comment> lastComment = commentService.getLastCommentByDocumentId(documentId);
@@ -102,10 +101,8 @@ public class DocumentController {
             User user = userService.findByUsername(userDetails.getUsername());
             if (user != null) currentUserId = user.getId();
         }
-        // service returns primitives, already safe
-        int downloads = countDownloads;
         int favorites = countFavorites;
-        DocumentResponse dto = new DocumentResponse(document, downloads, favorites);
+        DocumentResponse dto = new DocumentResponse(document, favorites);
         model.addAttribute("document", dto);
         model.addAttribute("relativeDocument", relativeDocument);
         model.addAttribute("lastComment", lastComment);

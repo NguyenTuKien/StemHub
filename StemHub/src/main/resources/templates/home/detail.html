@@ -62,7 +62,7 @@
                             <div class="document-meta">
                                 <div class="document-meta-item">
                                     <i class="fas fa-user text-primary"></i>
-                                    <span><strong>Tác giả:</strong> <span th:text="${document.authorName != null ? document.authorName : 'Anonymous'}">Tác giả</span></span>
+                                    <span><strong>Người chia sẻ:</strong> <span th:text="${document.authorName != null ? document.authorName : 'Anonymous'}">Người chia sẻ</span></span>
                                 </div>
                                 <div class="document-meta-item">
                                     <i class="fas fa-calendar text-success"></i>
@@ -273,7 +273,7 @@
                             <div class="sidebar-card-body">
                                 <!-- Comment form (only when logged in) -->
                                 <form id="commentForm" class="mb-3" th:if="${currentUserId != null}"
-                                      th:attr="data-document-id=${documentId},data-user-id=${currentUserId}">
+                                      th:attr="data-document-id=${document.documentId},data-user-id=${currentUserId}">
                                     <div class="mb-2">
                                         <textarea id="commentInput" class="form-control" rows="3" placeholder="Viết bình luận..."></textarea>
                                     </div>
