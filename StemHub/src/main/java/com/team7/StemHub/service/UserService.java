@@ -17,8 +17,8 @@ public class UserService {
     private final UserRepo userRepo;
     private final DocumentRepo documentRepo;
 
-    public List<User> getAllUsersOrderByDocument() {
-        return userRepo.findAllOrderByDocumentNumberDesc().stream().limit(10).toList();
+    public List<User> getTop10UsersOrderByDocument() {
+        return userRepo.findTop10OrderByDocumentNumberDesc();
     }
 
     public User getUserById(UUID id) {

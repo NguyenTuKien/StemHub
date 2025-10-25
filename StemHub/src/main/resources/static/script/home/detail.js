@@ -11,7 +11,134 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Enhanced notification handling
     enhanceNotifications();
+
+    // Like button wiring (toggle like/unlike)
+    const likeBtn = document.getElementById('likeBtn');
+    if (likeBtn) {
+        likeBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const documentId = likeBtn.getAttribute('data-document-id');
+            const userId = likeBtn.getAttribute('data-user-id');
+            let liked = String(likeBtn.getAttribute('data-liked')) === 'true';
+
+            if (!userId) {
+                // Not logged in -> redirect to login
+                window.location.href = '/auth/login';
+                return;
+            }
+            if (!documentId) return;
+
+            // UI: disable and show spinner (preserve label and icon)
+            const iconEl = likeBtn.querySelector('i');
+            const labelEl = document.getElementById('likeLabel');
+            const originalIconClass = iconEl ? iconEl.className : '';
+            const originalLabel = labelEl ? labelEl.textContent : '';
+            likeBtn.disabled = true;
+            if (labelEl) labelEl.textContent = 'Đang xử lý...';
+            if (iconEl) iconEl.className = 'fas fa-spinner fa-spin me-2';
+
+            try {
+                const params = new URLSearchParams({ userId, documentId });
+                const res = await fetch('/like', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString(),
+                    redirect: 'follow'
+                });
+
+                if (!res.ok) throw new Error('Like request failed');
+
+                // Toggle UI state
+                const likeCountEl = document.getElementById('likeCount');
+                const current = parseInt(likeCountEl?.textContent || '0', 10) || 0;
+                if (liked) {
+                    // Was liked -> now unlike
+                    const newCount = Math.max(0, current - 1);
+                    if (likeCountEl) likeCountEl.textContent = String(newCount);
+                    likeBtn.classList.remove('btn-danger');
+                    likeBtn.classList.add('btn-outline-danger');
+                    if (iconEl) iconEl.className = 'far fa-heart me-2';
+                    if (labelEl) labelEl.textContent = 'Yêu thích';
+                    likeBtn.setAttribute('data-liked', 'false');
+                    liked = false;
+                } else {
+                    // Was not liked -> now like
+                    if (likeCountEl) likeCountEl.textContent = String(current + 1);
+                    likeBtn.classList.remove('btn-outline-danger');
+                    likeBtn.classList.add('btn-danger');
+                    if (iconEl) iconEl.className = 'fas fa-heart me-2';
+                    if (labelEl) labelEl.textContent = 'Bỏ yêu thích';
+                    likeBtn.setAttribute('data-liked', 'true');
+                    liked = true;
+                }
+            } catch (err) {
+                console.error(err);
+                // Restore UI on error
+                if (iconEl) iconEl.className = originalIconClass;
+                if (labelEl) labelEl.textContent = originalLabel || 'Yêu thích';
+                alert('Không thể cập nhật yêu thích. Vui lòng thử lại.');
+            } finally {
+                likeBtn.disabled = false;
+            }
+        });
+    }
+
+    // Download button wiring
+    const downloadBtn = document.getElementById('downloadBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', async (e) => {
+            // We want to count download then proceed to actual file
+            e.preventDefault();
+            const documentId = downloadBtn.getAttribute('data-document-id');
+            const fileUrl = downloadBtn.getAttribute('data-file-url') || downloadBtn.getAttribute('href');
+            if (!documentId || !fileUrl) {
+                // fallback: navigate to file
+                window.open(downloadBtn.getAttribute('href'), '_blank');
+                return;
+            }
+
+            const originalHtml = downloadBtn.innerHTML;
+            downloadBtn.classList.add('disabled');
+            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tải...';
+
+            try {
+                const params = new URLSearchParams({ documentId });
+                await fetch('/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params.toString(),
+                    redirect: 'follow'
+                });
+                // Even if not ok, proceed with download to not block user
+                const downloadCountEl = document.getElementById('downloadCount');
+                if (downloadCountEl) {
+                    const current = parseInt(downloadCountEl.textContent || '0', 10) || 0;
+                    downloadCountEl.textContent = String(current + 1);
+                }
+            } catch (err) {
+                console.warn('Download count failed, proceeding anyway:', err);
+            } finally {
+                // Proceed to actual file download in new tab
+                try {
+                    const a = document.createElement('a');
+                    a.href = fileUrl;
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    a.download = '';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } catch (openErr) {
+                    // fallback
+                    window.open(fileUrl, '_blank');
+                }
+                downloadBtn.classList.remove('disabled');
+                downloadBtn.innerHTML = originalHtml;
+            }
+        });
+    }
 });
+
 document.addEventListener('DOMContentLoaded', function() {
     // Hide loading overlay after a delay if onload events don't trigger
     setTimeout(hideLoading, 3000);
@@ -182,11 +309,13 @@ function getCookie(name) {
 }
 
 function toggleFavorite() {
-    const fileId = document.getElementById('favoriteBtn').getAttribute('data-file-id');
+    const fileId = document.getElementById('favoriteBtn')?.getAttribute('data-file-id');
     const btn = document.getElementById('favoriteBtn');
     const icon = document.getElementById('favoriteIcon');
     const text = document.getElementById('favoriteText');
     
+    if (!fileId || !btn || !icon || !text) return;
+
     fetch(`/toggle-favorite/${fileId}/`, {
         method: 'POST',
         headers: {

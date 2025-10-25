@@ -16,7 +16,6 @@ import java.util.List;
         @UniqueConstraint(columnNames = {"courseName"})
 })
 public class Course {
-
     @Id
     @Column(name = "courseId", nullable = false)
     @EqualsAndHashCode.Include // QUAN TRỌNG: Chỉ định so sánh bằng ID

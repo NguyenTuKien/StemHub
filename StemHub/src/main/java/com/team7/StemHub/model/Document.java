@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -26,6 +27,7 @@ public class Document {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false)
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @Column(name = "title", nullable = false, columnDefinition = "NVARCHAR(200)")
@@ -63,5 +65,5 @@ public class Document {
     private List<Comment> comments;
 
     @ManyToMany(mappedBy = "favoritesDocuments")
-    private List<User> favoredByUsers;
+    private Set<User> favoredByUsers;
 }

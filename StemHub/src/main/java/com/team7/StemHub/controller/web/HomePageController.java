@@ -20,7 +20,7 @@ public class HomePageController {
     public String home(Model model) {
         var topDocuments = documentService.getTopDocument();
         var newestDocuments = documentService.getNewestDocuments();
-        List<User> topUsers = userService.getAllUsersOrderByDocument();
+        List<User> topUsers = userService.getTop10UsersOrderByDocument();
 
         model.addAttribute("topDocuments", topDocuments);
         model.addAttribute("newestDocuments", newestDocuments);

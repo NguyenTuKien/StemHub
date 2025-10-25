@@ -90,24 +90,37 @@ public class DocumentController {
     @GetMapping("/detail/{documentId}")
     public String viewDocumentDetail(@PathVariable UUID documentId, Model model) {
         Document document = documentService.getDocumentById(documentId);
-        int countFavorites = documentService.countFavorites(documentId);
+        Long countFavorites = documentService.countFavorites(documentId);
         List<Document> relativeDocument = documentService.getDocumentsByCourse(document.getCourse());
         List<Comment> lastComment = commentService.getLastCommentByDocumentId(documentId);
-        // current user (if logged in) for commenting
+        // current user (if logged in) for commenting and like-state
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UUID currentUserId = null;
+        boolean liked = false;
+        User currentUser = null;
         if (authentication != null && authentication.isAuthenticated()
                 && authentication.getPrincipal() instanceof UserDetails userDetails) {
-            User user = userService.findByUsername(userDetails.getUsername());
-            if (user != null) currentUserId = user.getId();
+            currentUser = userService.findByUsername(userDetails.getUsername());
+            if (currentUser != null) {
+                currentUserId = currentUser.getId();
+                // determine like state using ID comparison
+                try {
+                    liked = currentUser.getFavoritesDocuments() != null &&
+                            currentUser.getFavoritesDocuments().stream()
+                                    .anyMatch(d -> d != null && d.getId() != null && d.getId().equals(documentId));
+                } catch (Exception ex) {
+                    liked = false;
+                }
+            }
         }
-        int favorites = countFavorites;
+        Long favorites = countFavorites;
         DocumentResponse dto = new DocumentResponse(document, favorites);
         model.addAttribute("document", dto);
         model.addAttribute("relativeDocument", relativeDocument);
         model.addAttribute("lastComment", lastComment);
         model.addAttribute("currentUserId", currentUserId); // legacy support
         model.addAttribute("user_id", currentUserId); // align with upload.html naming
+        model.addAttribute("liked", liked);
         return "home/detail";
     }
 }

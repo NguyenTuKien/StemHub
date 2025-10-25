@@ -17,7 +17,7 @@ public class DocumentService {
 
     private final DocumentRepo documentRepo;
 
-    public int countFavorites(UUID documentId) {
+    public Long countFavorites(UUID documentId) {
         return documentRepo.countFavoritesById(documentId);
     }
 
@@ -26,11 +26,11 @@ public class DocumentService {
     }
 
     public List<Document> getTopDocument() {
-        return documentRepo.findAllByOrderByFavoriteCountDesc().stream().limit(20).toList();
+        return documentRepo.findTop10ByOrderByDownloadCountDesc();
     }
 
     public List<Document> getNewestDocuments() {
-        return documentRepo.findAllByOrderByCreateAtDesc().stream().limit(20).toList();
+        return documentRepo.findTop20ByOrderByCreateAtDesc();
     }
 
     public Document getDocumentById(UUID id) {

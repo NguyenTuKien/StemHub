@@ -224,21 +224,27 @@
                             <div class="file-actions" th:if="${document.fileUrl != null and !#strings.isEmpty(document.fileUrl)}">
                                 <div class="actions-grid w-100">
                                     <div class="action-col action-40">
-                                        <a th:href="${document.fileUrl}"
+                                        <a id="downloadBtn"
+                                           th:href="${document.fileUrl}"
                                            class="btn btn-primary btn-lg w-100"
                                            target="_blank"
-                                           download>
+                                           download
+                                           th:attr="data-document-id=${document.documentId},data-file-url=${document.fileUrl}">
                                             <i class="fas fa-download me-2"></i>
                                             Tải xuống
-                                            <span class="badge bg-light text-dark rounded-pill ms-2 count-badge"
+                                            <span id="downloadCount" class="badge bg-light text-dark rounded-pill ms-2 count-badge"
                                                   th:text="${document.downloadCount != null ? document.downloadCount : 0}">0</span>
                                         </a>
                                     </div>
                                     <div class="action-col action-40">
-                                        <button class="btn btn-outline-danger btn-lg w-100" onclick="toggleFavorite()">
-                                            <i class="fas fa-heart me-2"></i>
-                                            Yêu thích
-                                            <span class="badge bg-danger rounded-pill ms-2 count-badge"
+                                        <button id="likeBtn"
+                                                class="btn btn-lg w-100"
+                                                th:classappend="${liked} ? 'btn-danger' : 'btn-outline-danger'"
+                                                th:attr="data-document-id=${document.documentId},data-user-id=${currentUserId},data-liked=${liked}">
+                                            <i class="me-2"
+                                               th:class="${liked} ? 'fas fa-heart' : 'far fa-heart'"></i>
+                                            <span id="likeLabel" th:text="${liked} ? 'Bỏ yêu thích' : 'Yêu thích'">Yêu thích</span>
+                                            <span id="likeCount" class="badge bg-danger rounded-pill ms-2 count-badge"
                                                   th:text="${document.favoriteCount != null ? document.favoriteCount : 0}">0</span>
                                         </button>
                                     </div>
@@ -349,8 +355,8 @@
 
     // Document actions
     function toggleFavorite() {
-        // TODO: Implement favorite functionality
-        alert('Chức năng yêu thích sẽ được triển khai sau');
+        // Legacy placeholder removed; handled by detail.js now
+        alert('');
     }
 
     function shareDocument() {

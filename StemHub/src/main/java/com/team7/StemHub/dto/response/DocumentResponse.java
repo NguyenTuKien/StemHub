@@ -18,9 +18,9 @@ public class DocumentResponse {
     String thumbnailUrl;
     LocalDateTime createdAt;
     Integer downloadCount;
-    Integer favoriteCount;
+    Long favoriteCount;
 
-    public DocumentResponse(Document document, int favoriteCount) {
+    public DocumentResponse(Document document, Long favoriteCount) {
         this.documentId = document != null ? document.getId() : null;
         this.title = document != null ? document.getTitle() : null;
         this.description = document != null ? document.getDescription() : null;

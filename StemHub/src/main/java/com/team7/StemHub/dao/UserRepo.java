@@ -19,6 +19,6 @@ public interface UserRepo extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
-    @Query("SELECT u FROM User u ORDER BY size(u.uploadFiles) DESC")
-    List<User> findAllOrderByDocumentNumberDesc();
+    @Query("SELECT u FROM User u ORDER BY size(u.uploadFiles) DESC LIMIT 10")
+    List<User> findTop10OrderByDocumentNumberDesc();
 }

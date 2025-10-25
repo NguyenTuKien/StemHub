@@ -102,12 +102,12 @@
                                             <span class="badge bg-primary me-1" th:text="${doc.category}">Category</span>
                                             <small class="text-muted">
                                                 <i class="fas fa-download me-1"></i>
-                                                <span>0 lượt tải</span>
+                                                <span th:text="${doc.downloadCount}">0 lượt tải</span><span> lượt tải</span>
                                             </small>
                                         </div>
-                                        <div class="featured-card-price">
-                                            <span class="badge bg-success">Miễn phí</span>
-                                        </div>
+<!--                                        <div class="featured-card-price">-->
+<!--                                            <span class="badge bg-success">Miễn phí</span>-->
+<!--                                        </div>-->
                                     </div>
                                 </div>
                             </a>
@@ -179,12 +179,30 @@
 
                     <div class="col-lg-4">
                         <div class="sidebar-section">
+                            <!-- Top Uploaders Sidebar (replaces Giới thiệu) -->
                             <div class="sidebar-card">
                                 <h3 class="sidebar-title">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Giới thiệu
+                                    <i class="fas fa-trophy me-2"></i>
+                                    Người chia sẻ hàng đầu
                                 </h3>
-                                <p>STEMIND là nền tảng trực tuyến tích hợp AI được thiết kế để giúp giáo viên nhanh chóng thiết kế bài giảng STEM, tìm kiếm tài liệu học tập phù hợp và tổ chức các hoạt động.</p>
+                                <ul class="list-group list-group-flush" th:if="${users != null and !#lists.isEmpty(users)}">
+                                    <li class="list-group-item d-flex align-items-center justify-content-between"
+                                        th:each="u, stat : ${users}">
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge rounded-pill me-2"
+                                                  th:classappend="${stat.index < 3} ? 'bg-warning text-dark' : 'bg-secondary'"
+                                                  th:text="${stat.index + 1}">1</span>
+                                            <div>
+                                                <div class="fw-semibold" th:text="${u.fullname != null ? u.fullname : u.username}">Tên người dùng</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-nowrap">
+                                            <i class="fas fa-file-upload me-1"></i>
+                                            <span th:text="${u.uploadFiles != null ? #lists.size(u.uploadFiles) : 0}">0</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <p class="text-muted text-center mb-0" th:if="${users == null or #lists.isEmpty(users)}">Chưa có dữ liệu xếp hạng</p>
                             </div>
 
                             <div class="sidebar-card">
