@@ -2,6 +2,7 @@ package com.team7.StemHub.dao;
 
 import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
+import com.team7.StemHub.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +21,6 @@ public interface DocumentRepo extends JpaRepository<Document, UUID> {
     Long countFavoritesById(@Param("documentId") UUID documentId);
 
     List<Document> findByCourse(Course course);
+
+    List<Document> findAllByAuthor(User user);
 }

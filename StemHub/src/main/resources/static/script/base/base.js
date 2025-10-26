@@ -29,7 +29,9 @@ if ('IntersectionObserver' in window) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const img = entry.target;
-                img.src = img.dataset.src;
+                if (img.dataset && img.dataset.src) {
+                    img.src = img.dataset.src;
+                }
                 img.classList.remove('lazy');
                 observer.unobserve(img);
             }
@@ -40,3 +42,31 @@ if ('IntersectionObserver' in window) {
         imageObserver.observe(img);
     });
 }
+
+// Inject current user id for favorites links and like buttons
+(function enhanceUserContext(){
+    document.addEventListener('DOMContentLoaded', async function(){
+        try{
+            const res = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
+            if(!res.ok) return; // not logged in
+            const user = await res.json();
+            if(!user || !user.id) return;
+            window.CURRENT_USER_ID = user.id;
+            // Rewrite favorites links to append userId
+            document.querySelectorAll('a[href="/user/favorites"]').forEach(function(a){
+                try{
+                    const url = new URL(a.getAttribute('href'), window.location.origin);
+                    url.searchParams.set('userId', user.id);
+                    a.setAttribute('href', url.pathname + url.search);
+                } catch(e) { /* ignore */ }
+            });
+            // Enrich like buttons missing data-user-id
+            document.querySelectorAll('.like-btn[data-document-id]:not([data-user-id])').forEach(function(btn){
+                btn.setAttribute('data-user-id', String(user.id));
+            });
+        } catch(err){
+            // ignore if cannot fetch current user
+            console.debug('No authenticated user context found');
+        }
+    });
+})();

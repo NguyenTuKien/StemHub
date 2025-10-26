@@ -217,7 +217,12 @@
                                     <a th:href="@{/document/upload}" class="btn btn-outline-warning">
                                         <i class="fas fa-plus me-2"></i>Tạo tài liệu mới
                                     </a>
-                                    <a th:href="@{/favorites}" class="btn btn-outline-info">
+                                    <a th:href="@{/user/favorites}"
+                                       class="btn btn-outline-info" sec:authorize="isAuthenticated()">
+                                        <i class="fas fa-heart me-2"></i>Tài liệu yêu thích
+                                    </a>
+                                    <a th:href="@{/auth/login}"
+                                       class="btn btn-outline-info" sec:authorize="isAnonymous()">
                                         <i class="fas fa-heart me-2"></i>Tài liệu yêu thích
                                     </a>
                                 </div>
