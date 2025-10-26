@@ -25,7 +25,6 @@ public class DocumentResponse {
         this.title = document != null ? document.getTitle() : null;
         this.description = document != null ? document.getDescription() : null;
         if (document != null && document.getAuthor() != null) {
-            // prefer fullname if available
             this.authorName = document.getAuthor().getFullname() != null ? document.getAuthor().getFullname() : document.getAuthor().getUsername();
         } else {
             this.authorName = "Anonymous";
@@ -37,5 +36,9 @@ public class DocumentResponse {
         this.createdAt = document != null ? document.getCreateAt() : null;
         this.downloadCount = document != null ? document.getDownloadCount() : null;
         this.favoriteCount = favoriteCount;
+    }
+
+    public DocumentResponse(Document document) {
+        this(document, null);
     }
 }

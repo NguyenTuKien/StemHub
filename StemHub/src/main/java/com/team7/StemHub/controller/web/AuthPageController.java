@@ -29,18 +29,16 @@ public class AuthPageController {
         if (logout != null) {
             model.addAttribute("message", "Bạn đã đăng xuất thành công.");
         }
-        return "auth/enter"; // => enter.html
+        return "auth/enter";
     }
 
     @GetMapping({"/signup", "/register"})
     public String showSignupForm() {
-        // Serve the registration page for both /auth/signup and /auth/register
-        return "auth/register"; // => templates/auth/register.html
+        return "auth/register";
     }
 
     @PostMapping("/register")
     public String handleRegister(@ModelAttribute SignupRequest dto, Model model) {
-        // Basic validation
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
             model.addAttribute("error", "Mật khẩu xác nhận không khớp");
             model.addAttribute("username", dto.getUsername());
@@ -52,6 +50,13 @@ public class AuthPageController {
         if (authService.findByUsername(dto.getUsername()) != null) {
             model.addAttribute("error", "Tên đăng nhập đã tồn tại");
             model.addAttribute("email", dto.getEmail());
+            model.addAttribute("fullname", dto.getFullname());
+            return "auth/register";
+        }
+
+        if(authService.findByEmail(dto.getEmail()) != null){
+            model.addAttribute("error", "Email đã tồn tại");
+            model.addAttribute("username", dto.getUsername());
             model.addAttribute("fullname", dto.getFullname());
             return "auth/register";
         }

@@ -26,17 +26,10 @@ public class UserController {
     private final DocumentService documentService;
 
     @GetMapping("/profile")
-    public String uploadDocument(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = null;
-        if (authentication != null && authentication.isAuthenticated()
-                && authentication.getPrincipal() instanceof UserDetails userDetails) {
-            String username = userDetails.getUsername();
-            // Query database to get User entity
-            currentUser = userService.findByUsername(username);
-        }
-        List<Document> uploadDocuments = documentService.getAllUploadDocumentsByAuthor(currentUser);
-        model.addAttribute("user", currentUser);
+    public String uploadDocument(@RequestParam UUID userId, Model model) {
+        User user = userService.getUserById(userId);
+        List<Document> uploadDocuments = documentService.getAllUploadDocumentsByAuthor(user);
+        model.addAttribute("user", user);
         model.addAttribute("documents", uploadDocuments);
         return "home/profile";
     }

@@ -37,20 +37,16 @@ public class DocumentController {
 
     @GetMapping("/upload")
     public String showUploadForm(Model model) {
-        // Get authenticated user ID
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UUID userId = null;
         if (authentication != null && authentication.isAuthenticated()
                 && authentication.getPrincipal() instanceof UserDetails userDetails) {
             String username = userDetails.getUsername();
-            // Query database to get User entity
             User user = userService.findByUsername(username);
             if (user != null) {
                 userId = user.getId();
             }
         }
-        // Provide both names for compatibility; template expects user_id
-        model.addAttribute("user_id", userId);
         model.addAttribute("userId", userId);
         return "home/upload"; // => templates/home/upload.html
     }
@@ -59,7 +55,6 @@ public class DocumentController {
     public String handleDocumentUpload(@ModelAttribute DocumentRequest documentRequest,
                                        RedirectAttributes redirectAttributes) {
         try {
-            // Ensure authorId is set from authenticated session if not provided
             if (documentRequest.getAuthorId() == null) {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 if (authentication != null && authentication.isAuthenticated()
@@ -70,13 +65,10 @@ public class DocumentController {
                     }
                 }
             }
-
-            // Basic validation
             if (documentRequest.getFile() == null || documentRequest.getFile().isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Vui lòng chọn tệp tài liệu.");
                 return "redirect:/document/upload";
             }
-
             documentFacade.uploadDocument(documentRequest);
             redirectAttributes.addFlashAttribute("success", "Tải tài liệu lên thành công!");
             return "redirect:/";
@@ -93,7 +85,6 @@ public class DocumentController {
         Long countFavorites = documentService.countFavorites(documentId);
         List<Document> relativeDocument = documentService.getDocumentsByCourse(document.getCourse());
         List<Comment> lastComment = commentService.getLastCommentByDocumentId(documentId);
-        // current user (if logged in) for commenting and like-state
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UUID currentUserId = null;
         boolean liked = false;
@@ -114,12 +105,11 @@ public class DocumentController {
             }
         }
         Long favorites = countFavorites;
-        DocumentResponse dto = new DocumentResponse(document, favorites);
-        model.addAttribute("document", dto);
+        DocumentResponse documentDTO = new DocumentResponse(document, favorites);
+        model.addAttribute("document", documentDTO);
         model.addAttribute("relativeDocument", relativeDocument);
         model.addAttribute("lastComment", lastComment);
         model.addAttribute("currentUserId", currentUserId); // legacy support
-        model.addAttribute("user_id", currentUserId); // align with upload.html naming
         model.addAttribute("liked", liked);
         return "home/detail";
     }

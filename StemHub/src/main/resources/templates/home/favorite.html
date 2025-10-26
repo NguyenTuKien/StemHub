@@ -63,7 +63,7 @@
                                             <i class="fas fa-download me-1"></i>Tải xuống
                                         </a>
                                         <button class="btn btn-sm btn-danger like-btn"
-                                                th:attr="data-document-id=${doc.id},data-liked=${true}">
+                                            th:attr="data-document-id=${doc.id},data-user-id=${user.id},data-liked=${true}">
                                             <i class="fas fa-heart me-1 like-icon"></i>
                                             <span class="like-label">Bỏ yêu thích</span>
                                         </button>

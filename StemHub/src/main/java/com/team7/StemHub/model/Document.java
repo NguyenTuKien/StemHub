@@ -1,5 +1,6 @@
 package com.team7.StemHub.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.team7.StemHub.model.enums.Category;
 import jakarta.persistence.*;
@@ -35,6 +36,7 @@ public class Document {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "courseId", nullable = false)
+    @JsonIgnore
     private Course course;
 
     // Đổi tên trường này thành "author"
@@ -65,5 +67,6 @@ public class Document {
     private List<Comment> comments;
 
     @ManyToMany(mappedBy = "favoritesDocuments")
+    @JsonIgnore
     private Set<User> favoredByUsers;
 }

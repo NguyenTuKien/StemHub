@@ -60,8 +60,16 @@ if ('IntersectionObserver' in window) {
                     a.setAttribute('href', url.pathname + url.search);
                 } catch(e) { /* ignore */ }
             });
+            // Rewrite profile links to append userId
+            document.querySelectorAll('a[href="/user/profile"]').forEach(function(a){
+                try{
+                    const url = new URL(a.getAttribute('href'), window.location.origin);
+                    url.searchParams.set('userId', user.id);
+                    a.setAttribute('href', url.pathname + url.search);
+                } catch(e) { /* ignore */ }
+            });
             // Enrich like buttons missing data-user-id
-            document.querySelectorAll('.like-btn[data-document-id]:not([data-user-id])').forEach(function(btn){
+            document.querySelectorAll('.like-btn[data-document-id]').forEach(function(btn){
                 btn.setAttribute('data-user-id', String(user.id));
             });
         } catch(err){

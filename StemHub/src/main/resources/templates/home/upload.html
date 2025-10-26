@@ -111,7 +111,7 @@
                                 <input type="text" class="form-control" id="courseName" name="courseName" placeholder="VD: Nhập môn Toán rời rạc" required>
                             </div>
 
-                            <input type="hidden" id="authorId" name="authorId" th:value="${user_id}"
+                <input type="hidden" id="authorId" name="authorId" th:value="${userId}"
                                    sec:authorize="isAuthenticated()">
                             <div class="mb-3">
                                 <label for="description" class="form-label">Mô tả</label>
