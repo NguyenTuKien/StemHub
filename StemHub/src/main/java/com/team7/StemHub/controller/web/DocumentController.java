@@ -1,7 +1,9 @@
 package com.team7.StemHub.controller.web;
 
 import com.team7.StemHub.dto.request.DocumentRequest;
+import com.team7.StemHub.dto.response.CommentResponse;
 import com.team7.StemHub.dto.response.DocumentResponse;
+import com.team7.StemHub.dto.response.UserResponse;
 import com.team7.StemHub.facade.DocumentFacade;
 import com.team7.StemHub.model.Comment;
 import com.team7.StemHub.model.Document;
@@ -104,11 +106,12 @@ public class DocumentController {
                 }
             }
         }
-        Long favorites = countFavorites;
-        DocumentResponse documentDTO = new DocumentResponse(document, favorites);
+        DocumentResponse documentDTO = new DocumentResponse(document, countFavorites);
+        List <DocumentResponse> relativeDocumentDTO = relativeDocument.stream().map(DocumentResponse::new).toList();
+        List < CommentResponse> lastCommentDTO = lastComment.stream().map(CommentResponse::new).toList();
         model.addAttribute("document", documentDTO);
-        model.addAttribute("relativeDocument", relativeDocument);
-        model.addAttribute("lastComment", lastComment);
+        model.addAttribute("relativeDocument", relativeDocumentDTO);
+        model.addAttribute("lastComment", lastCommentDTO);
         model.addAttribute("currentUserId", currentUserId); // legacy support
         model.addAttribute("liked", liked);
         return "home/detail";

@@ -1,5 +1,7 @@
 package com.team7.StemHub.controller.web;
 
+import com.team7.StemHub.dto.response.DocumentResponse;
+import com.team7.StemHub.dto.response.UserResponse;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
 import com.team7.StemHub.service.DocumentService;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toSet;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -28,9 +32,11 @@ public class UserController {
     @GetMapping("/profile")
     public String uploadDocument(@RequestParam UUID userId, Model model) {
         User user = userService.getUserById(userId);
-        List<Document> uploadDocuments = documentService.getAllUploadDocumentsByAuthor(user);
-        model.addAttribute("user", user);
-        model.addAttribute("documents", uploadDocuments);
+        UserResponse userResponse = new UserResponse(user);
+        List<Document> documents = documentService.getAllUploadDocumentsByAuthor(user);
+        List<DocumentResponse> documentDTO = documents.stream().map(DocumentResponse::new).toList();
+        model.addAttribute("user", userResponse);
+        model.addAttribute("documents", documentDTO);
         return "home/profile";
     }
 
@@ -44,9 +50,14 @@ public class UserController {
             // Query database to get User entity
             currentUser = userService.findByUsername(username);
         }
+        
         Set<Document> favoriteDocuments = currentUser.getFavoritesDocuments();
-        model.addAttribute("user", currentUser);
-        model.addAttribute("documents", favoriteDocuments);
+        UserResponse userResponse = new UserResponse(currentUser);
+        Set<DocumentResponse> favoriteDocumentsDTO = favoriteDocuments.stream()
+                .map(DocumentResponse::new)
+                .collect(toSet());
+        model.addAttribute("user", userResponse);
+        model.addAttribute("documents", favoriteDocumentsDTO);
         return "home/favorite";
     }
 }

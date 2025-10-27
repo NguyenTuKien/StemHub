@@ -71,9 +71,20 @@ public class AuthAPIController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<User> me(Authentication authentication) {
+    public ResponseEntity<?> me(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
         String username = authentication.getName();
         User user = authService.findByUsername(username);
-        return ResponseEntity.ok(user);
+        if (user == null) {
+            return ResponseEntity.status(404).build();
+        }
+        // Return only minimal info to avoid serializing entire entity graph
+        Map<String, Object> body = new HashMap<>();
+        body.put("userId", user.getId());
+        body.put("username", user.getUsername());
+        body.put("fullname", user.getFullname());
+        return ResponseEntity.ok(body);
     }
 }

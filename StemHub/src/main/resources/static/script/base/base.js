@@ -50,13 +50,13 @@ if ('IntersectionObserver' in window) {
             const res = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
             if(!res.ok) return; // not logged in
             const user = await res.json();
-            if(!user || !user.id) return;
-            window.CURRENT_USER_ID = user.id;
+            if(!user || !user.userId) return;
+            window.CURRENT_USER_ID = user.userId;
             // Rewrite favorites links to append userId
             document.querySelectorAll('a[href="/user/favorites"]').forEach(function(a){
                 try{
                     const url = new URL(a.getAttribute('href'), window.location.origin);
-                    url.searchParams.set('userId', user.id);
+                    url.searchParams.set('userId', user.userId);
                     a.setAttribute('href', url.pathname + url.search);
                 } catch(e) { /* ignore */ }
             });
@@ -64,13 +64,13 @@ if ('IntersectionObserver' in window) {
             document.querySelectorAll('a[href="/user/profile"]').forEach(function(a){
                 try{
                     const url = new URL(a.getAttribute('href'), window.location.origin);
-                    url.searchParams.set('userId', user.id);
+                    url.searchParams.set('userId', user.userId);
                     a.setAttribute('href', url.pathname + url.search);
                 } catch(e) { /* ignore */ }
             });
             // Enrich like buttons missing data-user-id
             document.querySelectorAll('.like-btn[data-document-id]').forEach(function(btn){
-                btn.setAttribute('data-user-id', String(user.id));
+                btn.setAttribute('data-user-id', String(user.userId));
             });
         } catch(err){
             // ignore if cannot fetch current user

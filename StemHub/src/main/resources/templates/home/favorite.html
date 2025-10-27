@@ -41,10 +41,10 @@
         <section class="py-4">
             <div class="container">
                 <div th:if="${documents != null and !#lists.isEmpty(documents)}" class="row g-3" id="favoritesGrid">
-                    <div class="col-12 col-sm-6 col-lg-4" th:each="doc : ${documents}" th:attr="data-doc-id=${doc.id}">
+                    <div class="col-12 col-sm-6 col-lg-4" th:each="doc : ${documents}" th:attr="data-doc-id=${doc.documentId}">
                         <div class="card h-100 shadow-sm">
-                            <a th:href="@{/document/detail/{id}(id=${doc.id})}" class="text-decoration-none">
-                                <img class="card-img-top" th:src="${doc.thumbnailPath != null ? doc.thumbnailPath : '/images/default.webp'}" th:alt="${doc.title}" loading="lazy">
+                            <a th:href="@{/document/detail/{id}(id=${doc.documentId})}" class="text-decoration-none">
+                                <img class="card-img-top" th:src="${doc.thumbnailUrl != null ? doc.thumbnailUrl : '/images/default.webp'}" th:alt="${doc.title}" loading="lazy">
                             </a>
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title text-truncate" th:text="${doc.title}">Tiêu đề</h5>
@@ -56,14 +56,14 @@
                                     </small>
                                     <div class="btn-group">
                                         <a class="btn btn-sm btn-primary download-btn"
-                                           th:href="${doc.filePath}"
+                                           th:href="${doc.fileUrl}"
                                            target="_blank"
                                            download
-                                           th:attr="data-document-id=${doc.id},data-file-url=${doc.filePath}">
+                                           th:attr="data-document-id=${doc.documentId},data-file-url=${doc.fileUrl}">
                                             <i class="fas fa-download me-1"></i>Tải xuống
                                         </a>
                                         <button class="btn btn-sm btn-danger like-btn"
-                                            th:attr="data-document-id=${doc.id},data-user-id=${user.id},data-liked=${true}">
+                                            th:attr="data-document-id=${doc.documentId},data-user-id=${user.userId},data-liked=${true}">
                                             <i class="fas fa-heart me-1 like-icon"></i>
                                             <span class="like-label">Bỏ yêu thích</span>
                                         </button>

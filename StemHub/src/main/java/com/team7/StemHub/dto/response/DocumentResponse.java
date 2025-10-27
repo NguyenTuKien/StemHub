@@ -2,23 +2,24 @@ package com.team7.StemHub.dto.response;
 
 import com.team7.StemHub.model.Document;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
 public class DocumentResponse {
-    UUID documentId;
-    String title;
-    String description;
-    String authorName;
-    String category;
-    String courseName;
-    String fileUrl;
-    String thumbnailUrl;
-    LocalDateTime createdAt;
-    Integer downloadCount;
-    Long favoriteCount;
+    private final UUID documentId;
+    private final String title;
+    private final String description;
+    private final String authorName;
+    private final String category;
+    private final String courseName;
+    private final String fileUrl;
+    private final String thumbnailUrl;
+    private final LocalDateTime createdAt;
+    private final Integer downloadCount;
+    private final Long favoriteCount;
 
     public DocumentResponse(Document document, Long favoriteCount) {
         this.documentId = document != null ? document.getId() : null;

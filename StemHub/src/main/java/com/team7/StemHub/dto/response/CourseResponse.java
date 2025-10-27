@@ -2,14 +2,15 @@ package com.team7.StemHub.dto.response;
 
 import com.team7.StemHub.model.Course;
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class CourseResponse {
-    private String courseId;
-    private String courseName;
+    private final String courseId;
+    private final String courseName;
 
     public CourseResponse(Course course) {
-        this.courseId = courseId;
-        this.courseName = courseName;
+        this.courseId = course.getCourseId();
+        this.courseName = course.getCourseName();
     }
 }
