@@ -28,6 +28,10 @@ public class AuthService {
         return userRepo.findByUsername(username).orElse(null);
     }
 
+    public User findByEmail(String email) {
+        return userRepo.findByEmail(email).orElse(null);
+    }
+
     public User getUserById(UUID userId){
         return userRepo.findById(userId).
                 orElseThrow(() -> new UsernameNotFoundException("User not found"));

@@ -2,7 +2,8 @@
 
 .main-footer {
     margin-top: auto;
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+    /* Keep the original dark background from .bg-dark on the element */
+    background-color: #212529 !important;
     position: relative;
     overflow: hidden;
 }
@@ -277,8 +278,21 @@
 
 /* Dark mode adjustments */
 [data-bs-theme="dark"] .main-footer {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    /* Preserve dark solid background in dark mode */
+    background-color: #212529 !important;
 }
+
+/* Polished footer typography and spacing without changing background */
+.main-footer .footer-section { margin-top: .25rem; }
+.main-footer .footer-title { letter-spacing: .3px; }
+.main-footer .footer-content p,
+.main-footer .footer-content li { color: #b8c0c7; }
+.main-footer a.text-muted { color: #c7ced4 !important; }
+.main-footer a.text-muted:hover,
+.main-footer a.text-light:hover { color: #ffffff !important; text-decoration: none; }
+.main-footer .footer-bottom { border-color: rgba(255,255,255,0.12) !important; }
+.main-footer .footer-content .row { align-items: flex-start; }
+.main-footer .footer-content .list-unstyled li { margin-bottom: .5rem; }
 
 [data-bs-theme="dark"] .footer-links a:hover {
     color: #8b9dc3;

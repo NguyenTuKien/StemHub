@@ -1,5 +1,7 @@
 package com.team7.StemHub.controller.web;
 
+import com.team7.StemHub.dto.response.DocumentResponse;
+import com.team7.StemHub.dto.response.UserResponse;
 import com.team7.StemHub.model.User;
 import com.team7.StemHub.service.DocumentService;
 import com.team7.StemHub.service.UserService;
@@ -19,13 +21,14 @@ public class HomePageController {
     @GetMapping("/")
     public String home(Model model) {
         var topDocuments = documentService.getTopDocument();
+        List<DocumentResponse> topDocumentsDTO = topDocuments.stream().map(DocumentResponse::new).toList();
         var newestDocuments = documentService.getNewestDocuments();
+        List<DocumentResponse> newestDocumentsDTO = newestDocuments.stream().map(DocumentResponse::new).toList();
         List<User> topUsers = userService.getTop10UsersOrderByDocument();
-
-        model.addAttribute("topDocuments", topDocuments);
-        model.addAttribute("newestDocuments", newestDocuments);
-        model.addAttribute("users", topUsers);
-
+        List<UserResponse> topUsersDTO = topUsers.stream().map(UserResponse::new).toList();
+        model.addAttribute("topDocuments", topDocumentsDTO);
+        model.addAttribute("newestDocuments", newestDocumentsDTO);
+        model.addAttribute("users", topUsersDTO);
         return "home/home";
     }
 
