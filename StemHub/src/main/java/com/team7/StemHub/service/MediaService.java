@@ -26,7 +26,7 @@ import java.util.Optional;
 public class MediaService {
     private final S3Client s3Client;
 
-    @Value("${cloudflare.r2.bucket}")
+    @Value("${cloudflare.r2.bucket-name}")
     private String bucket;
 
     @Value("${cloudflare.r2.public-url}")

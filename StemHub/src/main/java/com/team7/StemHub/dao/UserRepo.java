@@ -18,7 +18,7 @@ public interface UserRepo extends JpaRepository<User, UUID> {
     @Query("SELECT u FROM User u ORDER BY size(u.uploadFiles) DESC LIMIT 10")
     List<User> findTop10OrderByDocumentNumberDesc();
 
-    List<User> findByFullNameContainingIgnoreCase(String fullName);
+    List<User> findByFullnameContainingIgnoreCase(String fullname);
 
     List<User> findByUsernameContainingIgnoreCase(String username);
 }

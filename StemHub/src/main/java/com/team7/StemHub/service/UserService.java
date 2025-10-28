@@ -48,7 +48,7 @@ public class UserService {
 
     public Set<User> searchUsers(String keyword){
         Set<User> result;
-        List<User> byFullName = userRepo.findByFullNameContainingIgnoreCase(keyword);
+        List<User> byFullName = userRepo.findByFullnameContainingIgnoreCase(keyword);
         List<User> byUsername = userRepo.findByUsernameContainingIgnoreCase(keyword);
         result =  Set.copyOf(byFullName);
         result.addAll(byUsername);
