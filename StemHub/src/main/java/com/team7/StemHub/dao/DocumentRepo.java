@@ -3,6 +3,7 @@ package com.team7.StemHub.dao;
 import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
+import com.team7.StemHub.model.enums.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,4 +24,9 @@ public interface DocumentRepo extends JpaRepository<Document, UUID> {
     List<Document> findByCourse(Course course);
 
     List<Document> findAllByAuthor(User user);
+
+    List<Document> findByTitleContainingIgnoreCase(String title);
+
+    List<Document> findByDescriptionContainingIgnoreCase(String description);
+    List<Document> findByCategoryOrderByDownloadCountDesc(Category category);
 }

@@ -5,6 +5,7 @@ import com.team7.StemHub.exception.NotFoundException;
 import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
+import com.team7.StemHub.model.enums.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,4 +55,22 @@ public class DocumentService {
     public List<Document> getAllUploadDocumentsByAuthor(User user) {
         return documentRepo.findAllByAuthor(user);
     }
+
+    public List<Document> getDocumentsByCategorySortedByDownloadCount(String category) {
+        return documentRepo.findByCategoryOrderByDownloadCountDesc(Category.valueOf(category));
+    }
+
+    public Set<Document> searchDocuments(String keyword){
+        Set<Document> result = new java.util.HashSet<>();
+
+        List<Document> byTitle = documentRepo.findByTitleContainingIgnoreCase(keyword);
+        List<Document> byDescription = documentRepo.findByDescriptionContainingIgnoreCase(keyword);
+
+        result.addAll(byTitle);
+        result.addAll(byDescription);
+
+        return result;
+    }
+
+
 }

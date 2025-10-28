@@ -23,4 +23,12 @@ public class CourseService {
                     return courseRepo.save(newCourse);
                 });
     }
+
+    public List<Course> getAllCourses(){
+        return courseRepo.findAll();
+    }
+
+    public List<Course> searchCourses(String keyword){
+        return courseRepo.findByCourseNameContainingIgnoreCase(keyword);
+    }
 }
