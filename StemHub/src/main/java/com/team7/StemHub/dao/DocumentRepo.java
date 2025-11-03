@@ -28,5 +28,8 @@ public interface DocumentRepo extends JpaRepository<Document, UUID> {
     List<Document> findByTitleContainingIgnoreCase(String title);
 
     List<Document> findByDescriptionContainingIgnoreCase(String description);
-    List<Document> findByCategoryOrderByDownloadCountDesc(Category category);
+
+    List<Document> findTop15ByCategoryOrderByDownloadCountDesc(Category category);
+
+    List<Document> findByCategoryOrderByCreateAtDesc(Category category);
 }

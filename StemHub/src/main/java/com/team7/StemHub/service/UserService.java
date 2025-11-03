@@ -47,10 +47,10 @@ public class UserService {
     }
 
     public Set<User> searchUsers(String keyword){
-        Set<User> result;
+        Set<User> result = new java.util.HashSet<>();
         List<User> byFullName = userRepo.findByFullnameContainingIgnoreCase(keyword);
         List<User> byUsername = userRepo.findByUsernameContainingIgnoreCase(keyword);
-        result =  Set.copyOf(byFullName);
+        result.addAll(byFullName);
         result.addAll(byUsername);
         return result;
     }

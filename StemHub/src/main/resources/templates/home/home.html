@@ -120,7 +120,7 @@
                     <i class="fas fa-star fa-3x text-muted mb-3"></i>
                     <h5 class="text-muted">Chưa có tài liệu nổi bật</h5>
                     <p class="text-muted mb-3">Các tài liệu được nhiều người quan tâm sẽ xuất hiện ở đây</p>
-                    <a th:href="@{/search}" class="btn btn-outline-primary">
+                    <a th:href="@{/search(keyword='')}" class="btn btn-outline-primary">
                         <i class="fas fa-search me-2"></i>Khám phá tài liệu
                     </a>
                 </div>
@@ -211,7 +211,7 @@
                                     Thao tác nhanh
                                 </h3>
                                 <div class="d-grid gap-2">
-                                    <a th:href="@{/search}" class="btn btn-outline-primary">
+                                    <a th:href="@{/search(keyword='')}" class="btn btn-outline-primary">
                                         <i class="fas fa-search me-2"></i>Tìm kiếm tài liệu
                                     </a>
                                     <a th:href="@{/document/upload}" class="btn btn-outline-warning">

@@ -2,13 +2,14 @@ package com.team7.StemHub.controller.web;
 
 import com.team7.StemHub.dto.request.DocumentRequest;
 import com.team7.StemHub.dto.response.CommentResponse;
+import com.team7.StemHub.dto.response.CourseResponse;
 import com.team7.StemHub.dto.response.DocumentResponse;
-import com.team7.StemHub.dto.response.UserResponse;
-import com.team7.StemHub.facade.DocumentFacade;
+import com.team7.StemHub.facade.R2StorageFacade;
 import com.team7.StemHub.model.Comment;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
 import com.team7.StemHub.service.CommentService;
+import com.team7.StemHub.service.CourseService;
 import com.team7.StemHub.service.DocumentService;
 import com.team7.StemHub.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +34,10 @@ import java.util.UUID;
 public class DocumentController {
 
     private final DocumentService documentService;
-    private final DocumentFacade documentFacade;
+    private final R2StorageFacade r2StorageFacade;
     private final UserService userService;
     private final CommentService commentService;
+    private final CourseService courseService;
 
     @GetMapping("/upload")
     public String showUploadForm(Model model) {
@@ -49,7 +51,11 @@ public class DocumentController {
                 userId = user.getId();
             }
         }
+        List<CourseResponse> courses = courseService.getAllCourses().stream()
+                .map(CourseResponse::new)
+                .toList();
         model.addAttribute("userId", userId);
+        model.addAttribute("courses", courses);
         return "home/upload"; // => templates/home/upload.html
     }
 
@@ -71,7 +77,7 @@ public class DocumentController {
                 redirectAttributes.addFlashAttribute("error", "Vui lòng chọn tệp tài liệu.");
                 return "redirect:/document/upload";
             }
-            documentFacade.uploadDocument(documentRequest);
+            r2StorageFacade.uploadDocument(documentRequest);
             redirectAttributes.addFlashAttribute("success", "Tải tài liệu lên thành công!");
             return "redirect:/";
         } catch (Exception e) {

@@ -219,4 +219,106 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
         }
     });
-}); 
+
+    // Hero Search functionality
+    const heroSearchInput = document.getElementById('heroSearchInput');
+    const heroSearchForm = document.querySelector('.hero-search-form');
+
+    if (heroSearchInput) {
+        // Add smooth focus animation
+        heroSearchInput.addEventListener('focus', function() {
+            const searchGroup = this.closest('.hero-search-group');
+            if (searchGroup) {
+                searchGroup.style.transform = 'translateY(-2px)';
+                searchGroup.style.boxShadow = '0 15px 50px rgba(0, 0, 0, 0.3)';
+            }
+        });
+
+        heroSearchInput.addEventListener('blur', function() {
+            const searchGroup = this.closest('.hero-search-group');
+            if (searchGroup) {
+                searchGroup.style.transform = 'translateY(0)';
+                searchGroup.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.2)';
+            }
+        });
+
+        // Enter key handling
+        heroSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (this.value.trim()) {
+                    heroSearchForm.submit();
+                }
+            }
+        });
+
+        // Real-time search suggestions (optional enhancement)
+        let searchTimeout;
+        heroSearchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+
+            if (query.length > 2) {
+                searchTimeout = setTimeout(() => {
+                    // You can implement real-time search suggestions here
+                    console.log('Searching for:', query);
+                }, 300);
+            }
+        });
+    }
+
+    // Quick search tag functionality
+    const quickSearchTags = document.querySelectorAll('.hero-tag');
+    quickSearchTags.forEach(tag => {
+        tag.addEventListener('click', function(e) {
+            e.preventDefault();
+            const keyword = this.textContent.trim();
+
+            // Add visual feedback
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'translateY(-2px)';
+
+                // Navigate to search page with keyword
+                window.location.href = this.href;
+            }, 100);
+        });
+    });
+
+    // Search button animation
+    const heroSearchBtn = document.querySelector('.hero-search-btn');
+    if (heroSearchBtn) {
+        heroSearchBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
+        });
+
+        heroSearchBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+
+        heroSearchBtn.addEventListener('click', function(e) {
+            const input = document.getElementById('heroSearchInput');
+            if (input && !input.value.trim()) {
+                e.preventDefault();
+                input.focus();
+
+                // Shake animation for empty search
+                input.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 500);
+            }
+        });
+    }
+
+    // Add shake animation CSS dynamically
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+    `;
+    document.head.appendChild(style);
+});

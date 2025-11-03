@@ -23,23 +23,42 @@
     </style>
 
     <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a class="blog-header-logo text-body-emphasis text-decoration-none me-4" th:href="@{/}">
-                <img class="logo" th:src="@{/images/Logo_text.png}" alt="Logo" style="width: 150px; height: 60px;">
-            </a>
-            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a th:href="@{/}" class="nav-link px-2" style="color:black; font-weight: bold; margin: 0px 20px;">Tài liệu</a></li>
-                <li><a th:href="@{/about}" class="nav-link px-2" style="color:black; font-weight: bold; margin: 0px 20px;">Về chúng tôi</a></li>
-            </ul>
+        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+            <!-- Left: logo + nav -->
+            <div class="d-flex align-items-center gap-3 flex-shrink-0">
+                <a class="blog-header-logo text-body-emphasis text-decoration-none" th:href="@{/}">
+                    <img class="logo" th:src="@{/images/Logo_text.png}" alt="Logo" style="width: 150px; height: 60px;">
+                </a>
+                <ul class="nav mb-0 d-none d-lg-flex">
+                    <li><a th:href="@{/}" class="nav-link px-2" style="color:black; font-weight: bold; margin: 0 12px;">Tài liệu</a></li>
+                    <li><a th:href="@{/about}" class="nav-link px-2" style="color:black; font-weight: bold; margin: 0 12px;">Về chúng tôi</a></li>
+                </ul>
+            </div>
 
-            <!-- Buttons for not logged in users -->
-            <div sec:authorize="!isAuthenticated()" class="text-end">
+            <!-- Center: Search Bar -->
+            <form method="GET" action="/search" class="header-search order-3 order-lg-2 flex-grow-1 mx-lg-4 my-2 my-lg-0" style="flex: 1 1 480px; max-width: 680px; min-width: 260px;">
+                <div class="input-group input-group-lg">
+                    <input type="text"
+                           class="form-control"
+                           name="keyword"
+                           placeholder="Tìm kiếm tài liệu..."
+                           autocomplete="off"
+                           aria-label="Tìm kiếm"
+                           style="border-radius: 28px 0 0 28px; padding-left: 16px;">
+                    <button class="btn btn-warning px-4" type="submit" style="border-radius: 0 28px 28px 0;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Right: Auth / Avatar -->
+            <div sec:authorize="!isAuthenticated()" class="text-end flex-shrink-0 order-2 order-lg-3">
                 <a class="btn btn-outline me-2 border border-dark-subtle" th:href="@{/auth/login}">Đăng nhập</a>
                 <a class="btn btn-warning" th:href="@{/auth/signup}">Đăng ký</a>
             </div>
 
             <!-- Dropdown for logged in users -->
-            <div sec:authorize="isAuthenticated()" class="text-end">
+            <div sec:authorize="isAuthenticated()" class="text-end flex-shrink-0 order-2 order-lg-3">
                 <div class="dropdown">
                     <div class="avatar-circle dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <span sec:authentication="name" th:text="${#authentication.name != null ? #authentication.name.substring(0,1).toUpperCase() : 'U'}">U</span>
@@ -64,7 +83,7 @@
             </div>
 
             <!-- Fallback if Spring Security is not working -->
-            <div th:if="${#ctx.containsVariable('currentUser')}" class="text-end">
+            <div th:if="${#ctx.containsVariable('currentUser')}" class="text-end flex-shrink-0 order-2 order-lg-3">
                 <div class="dropdown">
                     <div class="avatar-circle dropdown-toggle" id="fallbackUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <span th:text="${currentUser.username != null ? currentUser.username.substring(0,1).toUpperCase() : 'U'}">U</span>

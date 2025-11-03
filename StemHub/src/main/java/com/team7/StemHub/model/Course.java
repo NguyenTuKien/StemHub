@@ -25,6 +25,9 @@ public class Course {
     @Column(name = "courseName", nullable = false, columnDefinition = "NVARCHAR(200)")
     private String courseName;
 
+    @Column(name = "otherName", columnDefinition = "NVARCHAR(1000)")
+    private String otherName;
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Document> docs;

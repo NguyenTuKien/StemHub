@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -17,10 +18,7 @@ public class CourseService {
     public Course getCourseByCourseName(String courseName) {
         return courseRepo.findByCourseName(courseName)
                 .orElseGet(() -> {
-                    Course newCourse = new Course();
-                    newCourse.setCourseId(UUID.randomUUID().toString()); // Auto-generate UUID
-                    newCourse.setCourseName(courseName);
-                    return courseRepo.save(newCourse);
+                    return courseRepo.findByCourseName("Khác").orElse(null);
                 });
     }
 
@@ -28,7 +26,14 @@ public class CourseService {
         return courseRepo.findAll();
     }
 
-    public List<Course> searchCourses(String keyword){
-        return courseRepo.findByCourseNameContainingIgnoreCase(keyword);
+    public Set<Course> searchCourses(String keyword){
+        Set<Course> result = new java.util.HashSet<>();
+        List<Course> byCourseName = courseRepo.findByCourseNameContainingIgnoreCase(keyword);
+        List<Course> byOther = courseRepo.findByOtherNameContainingIgnoreCase(keyword);
+        List<Course> byId = courseRepo.findByCourseIdContainingIgnoreCase(keyword);
+        result.addAll(byCourseName);
+        result.addAll(byOther);
+        result.addAll(byId);
+        return result;
     }
 }

@@ -1,5 +1,9 @@
 package com.team7.StemHub.model.enums;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public enum Category {
     PRESENTATION ("Bài thuyết trình"),
     ESSAY  ("Bài luận"),
@@ -10,7 +14,18 @@ public enum Category {
 
     private final String displayName;
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
     Category(String displayName) {
         this.displayName = displayName;
     }
+
+    public static List<String> getAllDisplayNames() {
+        return Arrays.stream(Category.values())
+                .map(Category::getDisplayName)
+                .collect(Collectors.toList());
+    }
+
 }
