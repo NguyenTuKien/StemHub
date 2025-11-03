@@ -305,12 +305,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Validate file type
-            const allowedTypes = ['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.txt', '.jpg', '.jpeg', '.png', '.gif', '.mp4', '.mov', '.zip', '.rar', '.7z', '.mp3', '.wav', '.flac'];
+            // Validate file type - Only PDF is allowed
+            const allowedTypes = ['.pdf'];
             const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
             
             if (!allowedTypes.includes(fileExtension)) {
-                alert('Định dạng tệp không được hỗ trợ! Vui lòng chọn: PDF, Word, PowerPoint, Excel, Text, ảnh (JPG, PNG, GIF), video (MP4, MOV), âm thanh (MP3, WAV, FLAC) hoặc lưu trữ (ZIP, RAR, 7Z).');
+                alert('Định dạng tệp không được hỗ trợ! Chỉ cho phép tệp PDF (.pdf).');
                 fileInput.value = '';
                 resetUploadArea();
                 return;
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
         dragDropArea.querySelector('.upload-content').innerHTML = `
             <i class="fas fa-cloud-upload-alt upload-icon"></i>
             <h4>Kéo thả tệp vào đây hoặc click để chọn</h4>
-            <p class="text-muted">Hỗ trợ: PDF, Word, PowerPoint, Excel, Text, ảnh (JPG, PNG, GIF), video (MP4, MOV), âm thanh (MP3, WAV, FLAC), lưu trữ (ZIP, RAR, 7Z)</p>
+            <p class="text-muted">Hỗ trợ: Chỉ PDF (.pdf)</p>
             <p class="text-muted">Kích thước tối đa: 500MB</p>
         `;
     }

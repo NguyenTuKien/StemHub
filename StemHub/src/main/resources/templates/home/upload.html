@@ -59,11 +59,11 @@
 
                         <div class="drag-drop-area" id="dragDropArea">
                 <input type="file" class="file-input-hidden" id="fileInput" name="file"
-                    accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.mp4,.mov,.zip,.rar,.7z,.mp3,.wav,.flac" required>
+                    accept=".pdf,application/pdf" required>
                             <div class="upload-content">
                                 <i class="fas fa-cloud-upload-alt upload-icon"></i>
                                 <h4>Kéo thả tệp vào đây hoặc click để chọn</h4>
-                                <p class="text-muted">Hỗ trợ: PDF, Word, PowerPoint, Excel, Text, Ảnh (JPG, PNG, GIF), Video (MP4, MOV), Âm thanh (MP3, WAV, FLAC), Lưu trữ (ZIP, RAR, 7Z)</p>
+                                <p class="text-muted">Hỗ trợ: Chỉ PDF (.pdf)</p>
                                 <p class="text-muted">Kích thước tối đa: 500MB</p>
                             </div>
                         </div>
@@ -102,13 +102,23 @@
                                     <option value="RESEARCH_PAPER">Bài nghiên cứu</option>
                                     <option value="REPORT">Báo cáo</option>
                                     <option value="DOCUMENT">Tài liệu học tập</option>
+                                    <option value="EXAM">Đề thi/Đề kiểm tra</option>
                                     <option value="OTHERS">Khác</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label for="courseName" class="form-label">Môn học/Khoá học <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="courseName" name="courseName" placeholder="VD: Nhập môn Toán rời rạc" required>
+                                <!-- Use scrollable list from provided courses -->
+                                <select class="form-select" id="courseName" name="courseName" size="8" required>
+                                    <option value="" disabled selected>Chọn môn học/khoá học</option>
+                                    <option th:each="c : ${courses}"
+                                            th:value="${c.courseName}"
+                                            th:text="${c.courseName}">
+                                        Course Name
+                                    </option>
+                                </select>
+                                <small class="text-muted">Cuộn để xem thêm môn học</small>
                             </div>
 
                 <input type="hidden" id="authorId" name="authorId" th:value="${userId}"

@@ -1,15 +1,18 @@
 package com.team7.StemHub.service;
 
+import com.team7.StemHub.dao.CourseRepo;
 import com.team7.StemHub.dao.DocumentRepo;
 import com.team7.StemHub.exception.NotFoundException;
 import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
+import com.team7.StemHub.model.enums.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +22,8 @@ import java.util.UUID;
 public class DocumentService {
 
     private final DocumentRepo documentRepo;
+    private final CourseService courseService;
+    private final CourseRepo courseRepo;
 
     public Long countFavorites(UUID documentId) {
         return documentRepo.countFavoritesById(documentId);
@@ -53,5 +58,22 @@ public class DocumentService {
 
     public List<Document> getAllUploadDocumentsByAuthor(User user) {
         return documentRepo.findAllByAuthor(user);
+    }
+
+    public List<Document> getDocumentsByCategorySortedByDownloadCount(String category) {
+        return documentRepo.findTop15ByCategoryOrderByDownloadCountDesc(Category.valueOf(category));
+    }
+
+    public List<Document> getDocumentsByCategorySortedByCreateAt(String category){
+        return documentRepo.findByCategoryOrderByCreateAtDesc(Category.valueOf(category));
+    }
+
+    public Set<Document> searchDocuments(String keyword){
+        Set<Document> result = new java.util.HashSet<>();
+        List<Document> byTitle = documentRepo.findByTitleContainingIgnoreCase(keyword);
+        List<Document> byDescription = documentRepo.findByDescriptionContainingIgnoreCase(keyword);
+        result.addAll(byTitle);
+        result.addAll(byDescription);
+        return result;
     }
 }

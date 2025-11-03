@@ -3,8 +3,7 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-/src/main/resources/*.properties
-
+**/.env
 ### STS ###
 .apt_generated
 .classpath
@@ -32,6 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
-
 .m2/
 /logs

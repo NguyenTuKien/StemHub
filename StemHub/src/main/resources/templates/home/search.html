@@ -1,307 +1,184 @@
-{% extends "base/base.html" %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm kiếm - STEMIND</title>
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- App Styles -->
+    <link th:href="@{/style/base/base1.css}" rel="stylesheet">
+    <link th:href="@{/style/base/base2.css}" rel="stylesheet">
+    <link th:href="@{/style/base/header.css}" rel="stylesheet">
+    <link th:href="@{/style/home/search.css}" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<!-- Header -->
+<div th:replace="~{base/header :: header}"></div>
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'style/home/search.css' %}">
-{% endblock %}
-
-{% block content %}
-<!-- Search Header -->
-<div class="search-header">
-    <div class="container">
-            <div class="col-lg-12">
-                <h1 class="search-title">
-                    <i class="fas fa-search me-3"></i>Tìm kiếm tài liệu
+<div class="search-container flex-grow-1">
+    <!-- Search Header -->
+    <div class="search-header">
+        <div class="container">
+            <div class="text-center">
+                <h1 class="search-title mb-2">
+                    <i class="fas fa-search me-2"></i>Tìm kiếm tài liệu STEM
                 </h1>
-                <p class="search-subtitle">Tìm kiếm theo từ khóa hoặc danh mục trong hàng nghìn tài liệu STEM chất lượng</p>
-                
+                <p class="search-subtitle mb-4">Khám phá kiến thức từ hàng nghìn tài liệu chất lượng cao</p>
+
                 <!-- Search Form -->
-                <form method="GET" action="{% url 'search_files' %}" class="search-form">
-                    <div class="input-group input-group-lg">
-                        <input type="text" 
-                               class="form-control search-input" 
-                               name="q" 
-                               value="{{ query }}" 
-                               placeholder="Nhập từ khóa tìm kiếm (tùy chọn)..."
+                <form method="GET" action="/search" class="search-form">
+                    <div class="input-group input-group-lg justify-content-center" style="max-width: 900px; margin: 0 auto;">
+                        <input type="text"
+                               class="form-control search-input"
+                               name="keyword"
+                               th:value="${param.keyword}"
+                               placeholder="Nhập từ khóa tìm kiếm..."
                                id="searchInput">
-                        <button class="btn btn-primary search-btn" type="submit">
+                        <button class="btn btn-warning search-btn" type="submit">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
-                    
-                    <!-- Advanced Filters -->
-                    <div class="search-filters mt-5">
-                         <div class="row justify-content-center">
-                             <!-- Selected Categories Display -->
-                                <div class="col-12 mb-3">
-                                 <label class="filter-label">
-                                     <i class="fas fa-tags me-2"></i>Danh mục đã chọn
-                                 </label>
-                                 <div class="selected-categories" id="selectedCategories">
-                                     <!-- Selected categories will appear here as tags -->
-                                     {% for category in selected_categories %}
-                                     <span class="category-tag" data-category="{{ category }}">
-                                         {{ category }}
-                                         <button type="button" class="tag-remove" onclick="removeCategory('{{ category }}')">
-                                             <i class="fas fa-times"></i>
-                                         </button>
-                                     </span>
-                                     {% endfor %}
-                                 </div>
-                                 <!-- Hidden inputs for selected categories -->
-                                 <div id="categoryInputs">
-                                     {% for category in selected_categories %}
-                                     <input type="hidden" name="categories" value="{{ category }}">
-                                     {% endfor %}
-                                 </div>
-                             </div>
-                             
-                             <!-- Category Checkbox Columns -->
-                            <div class="col-12 mb-3">
-                                 <label class="filter-label">
-                                     <i class="fas fa-folder-tree me-2"></i>Chọn danh mục
-                                 </label>
-                                 <div class="category-columns">
-                                     {% for parent_category in parent_categories %}
-                                     <div class="category-column">
-                                         <div class="category-column-header">
-                                             <i class="fas fa-folder me-2"></i>{{ parent_category.name }}
-                                         </div>
-                                         <div class="category-column-content">
-                                             <!-- Child categories checkboxes -->
-                                             {% for child in parent_category.children.all %}
-                                             <div class="category-checkbox-item child-item">
-                                                 <input type="checkbox" 
-                                                        id="child_{{ child.id }}" 
-                                                        class="category-checkbox"
-                                                        data-category="{{ child.name }}"
-                                                        data-parent="{{ parent_category.name }}"
-                                                        onchange="handleCategoryCheckbox(this)">
-                                                 <label for="child_{{ child.id }}" class="checkbox-label">
-                                                     <i class="fas fa-file me-2"></i>{{ child.name }}
-                                                 </label>
-                                             </div>
-                                             {% endfor %}
-                                         </div>
-                                     </div>
-                                     {% endfor %}
-                                 </div>
-                             </div>
-                             
-                            <!-- Status Filter -->
-                             <div class="col-md-3 mb-2">
-                                <label class="filter-label">
-                                    <i class="fas fa-money-bill-wave me-2"></i>Trạng thái
-                                </label>
-                                <select name="status" class="form-select">
-                                    <option value="">Tất cả trạng thái</option>
-                                    <option value="0" {% if selected_status == '0' %}selected{% endif %}>Miễn phí</option>
-                                    <option value="1" {% if selected_status == '1' %}selected{% endif %}>Có phí</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Extension Type Filter -->
-                            <div class="col-md-3 mb-2">
-                                <label class="filter-label">
-                                    <i class="fas fa-file-alt me-2"></i>Loại tài liệu
-                                </label>
-                                <select name="extension_type" class="form-select">
-                                    <option value="">Tất cả loại</option>
-                                    {% for type_code, type_name in extension_types %}
-                                    <option value="{{ type_code }}" {% if selected_extension_type == type_code %}selected{% endif %}>{{ type_name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                             
-                             <!-- Search Button -->
-                             <div class="col-md-3 mb-2">
-                                 <label class="filter-label opacity-0">Search</label>
-                                 <button type="submit" class="btn btn-outline-primary w-100" onclick="beforeSubmitScroll()">
-                                     <i class="fas fa-search me-2"></i>Tìm kiếm 
-                                 </button>
-                             </div>
-                             
-                             <!-- Clear Button -->
-                             <div class="col-md-3 mb-2">
-                                 <label class="filter-label opacity-0">Clear</label>
-                                 <a href="{% url 'search_files' %}" class="btn btn-outline-secondary w-100">
-                                     <i class="fas fa-times me-2"></i>Xóa bộ lọc
-                                 </a>
-                             </div>
-                         </div>
-                     </div>
                 </form>
-            </div>      
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Search Results -->
-<div class="search-results">
+    <!-- Main Content -->
     <div class="container">
-        <div class="row">
-            <div class="col-lg-9">
-                <!-- Results Header -->
-                <div class="results-header">
-                    <h3>Kết quả tìm kiếm</h3>
-                    <p class="text-muted">
-                        {% if query %}
-                            Tìm thấy <strong>{{ total_results }}</strong> kết quả cho "<strong>{{ query }}</strong>"
-                        {% elif selected_categories %}
-                            Tìm thấy <strong>{{ total_results }}</strong> kết quả theo danh mục đã chọn
-                        {% else %}
-                            Hiển thị tất cả tài liệu
-                        {% endif %}
-                    </p>
-                </div>
-
-                <!-- Real-time Search Results -->
-                <div id="realTimeResults" class="real-time-results" style="display: none;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6 class="mb-0">
-                                <i class="fas fa-bolt me-2"></i>Kết quả tìm kiếm nhanh
-                            </h6>
-                        </div>
-                        <div class="card-body">
-                            <div id="realTimeList"></div>
+        <div class="row g-4 g-lg-5 align-items-start">
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <!-- Courses Section -->
+                <div class="sidebar-card mb-4">
+                    <div class="sidebar-card-header">
+                        <i class="fas fa-graduation-cap me-2"></i>Khóa học
+                    </div>
+                    <div class="sidebar-card-body">
+                        <th:block th:if="${courses != null and !courses.isEmpty()}">
+                            <div class="course-item" th:each="course : ${courses}">
+                                <div class="item-info">
+                                    <h6 class="mb-1" th:text="${course.courseName}">Course Title</h6>
+                                    <small class="text-muted">ID: <span th:text="${course.courseId}">Course ID</span></small>
+                                </div>
+                            </div>
+                        </th:block>
+                        <div class="empty-sidebar text-center" th:if="${courses == null or courses.isEmpty()}">
+                            <i class="fas fa-graduation-cap fa-2x mb-3"></i>
+                            <p>Không tìm thấy khóa học phù hợp</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Main Results -->
-                <div id="mainResults">
-                    {% if files %}
-                        <div class="row">
-                            {% for file in files %}
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="file-card">
-                                    <div class="file-thumbnail">
-                                        {% if file.file_thumbnail %}
-                                            <img src="{{ file.get_thumbnail_presigned_url }}" alt="{{ file.title }}" class="img-fluid">
-                                        {% else %}
-                                            <img src="{% static 'images/default.webp' %}" alt="Default thumbnail" class="img-fluid">
-                                        {% endif %}
-                                        <div class="file-overlay">
-                                            <a href="{% url 'file_detail' file.title %}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-eye me-1"></i>Xem chi tiết
-                                            </a>
-                                        </div>
+                <!-- Users Section -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <i class="fas fa-users me-2"></i>Người dùng
+                    </div>
+                    <div class="sidebar-card-body">
+                        <th:block th:if="${users != null and !users.isEmpty()}">
+                            <div class="user-item" th:each="user : ${users}">
+                                <div class="item-info">
+                                    <h6 class="mb-1" th:text="${user.fullname}">Full Name</h6>
+                                    <small class="text-muted">@<span th:text="${user.username}">username</span></small>
+                                    <small class="d-block text-muted mt-1"><span th:text="${user.role}">Role</span></small>
+                                </div>
+                            </div>
+                        </th:block>
+                        <div class="empty-sidebar text-center" th:if="${users == null or users.isEmpty()}">
+                            <i class="fas fa-users fa-2x mb-3"></i>
+                            <p>Không tìm thấy người dùng phù hợp</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="main-content">
+                    <!-- Results Header -->
+                    <div class="results-header">
+                        <div class="row align-items-center">
+                            <div class="col-12">
+                                <h3>Kết quả cho "<span th:text="${param.keyword != null ? param.keyword[0] : 'Tất cả tài liệu'}">keyword</span>"</h3>
+                                <p class="text-muted mb-0">
+                                        <span th:if="${documents != null and !documents.isEmpty()}">
+                                            Tìm thấy <span th:text="${#lists.size(documents)}">0</span> tài liệu
+                                        </span>
+                                    <span th:if="${documents == null or documents.isEmpty()}">
+                                            Không tìm thấy tài liệu nào
+                                        </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents Grid -->
+                    <th:block th:if="${documents != null and !documents.isEmpty()}">
+                        <div class="document-grid">
+                            <div class="file-card" th:each="document : ${documents}">
+                                <div class="file-thumbnail">
+                                    <img th:src="${document.thumbnailUrl != null ? document.thumbnailUrl : '/images/default.webp'}"
+                                         th:alt="${document.title}">
+                                    <div class="file-overlay">
+                                        <a th:href="@{/document/detail/{id}(id=${document.documentId})}" class="btn btn-light btn-sm">
+                                            <i class="fas fa-eye me-1"></i>Xem chi tiết
+                                        </a>
                                     </div>
-                                    <div class="file-info">
-                                        <h5 class="file-title">
-                                            <a href="{% url 'file_detail' file.title %}">{{ file.title }}</a>
-                                        </h5>
-                                        <p class="file-description">
-                                            {{ file.file_description|truncatewords:15|default:"Không có mô tả" }}
-                                        </p>
-                                        <div class="file-meta">
-                                            <span class="category-badge">{{ file.categories.first.name }}</span>
-                                            <span class="extension-badge">{{ file.extension.get_extension_type_display }}</span>
-                                            <span class="author">bởi {{ file.author.username }}</span>
-                                        </div>
-                                        <div class="file-stats">
-                                            <span class="downloads">
-                                                <i class="fas fa-download me-1"></i>{{ file.file_downloads }}
-                                            </span>
-                                            <span class="status {% if file.file_status == 0 %}free{% else %}paid{% endif %}">
-                                                {% if file.file_status == 0 %}
-                                                    <i class="fas fa-gift me-1"></i>Miễn phí
-                                                {% else %}
-                                                    <i class="fas fa-dollar-sign me-1"></i>{{ file.file_price }}đ
-                                                {% endif %}
-                                            </span>
-                                        </div>
+                                </div>
+                                <div class="file-info">
+                                    <h5 class="file-title">
+                                        <a th:href="@{/document/detail/{id}(id=${document.documentId})}" th:text="${document.title}">Document Title</a>
+                                    </h5>
+                                    <p class="file-description" th:text="${document.description != null ? #strings.abbreviate(document.description, 100) : 'Không có mô tả'}">Description</p>
+                                    <div class="file-meta">
+                                        <span class="category-badge" th:text="${document.category != null ? document.category : 'Chung'}">Category</span>
+                                        <span class="author"><i class="fas fa-user me-1"></i><span th:text="${document.authorName != null ? document.authorName : 'Anonymous'}">Author</span></span>
+                                    </div>
+                                    <div class="file-stats">
+                                        <span class="downloads"><i class="fas fa-download me-1"></i><span th:text="${document.downloadCount != null ? document.downloadCount : 0}">0</span></span>
+                                        <span class="favorites"><i class="fas fa-heart text-danger me-1"></i><span th:text="${document.favoriteCount != null ? document.favoriteCount : 0}">0</span></span>
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
-                    {% else %}
-                        <div class="no-results">
-                            <div class="text-center py-5">
-                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                                <h4>Không tìm thấy kết quả</h4>
-                                <p class="text-muted">
-                                    {% if query %}
-                                        Không có tài liệu nào phù hợp với từ khóa "{{ query }}"
-                                    {% elif selected_categories %}
-                                        Không có tài liệu nào phù hợp với danh mục đã chọn
-                                    {% else %}
-                                        Chưa có tài liệu nào trong hệ thống
-                                    {% endif %}
-                                </p>
-                                <a href="{% url 'home' %}" class="btn btn-primary">
-                                    <i class="fas fa-home me-2"></i>Về trang chủ
-                                </a>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
+                    </th:block>
 
-            <!-- Sidebar -->
-            <div class="col-lg-3">
-                <div class="sidebar-section">
-                    <!-- Quick Actions -->
-                    <div class="sidebar-card">
-                        <div class="sidebar-card-header">
-                            <i class="fas fa-cog me-2"></i>Thao tác nhanh
-                        </div>
-                        <div class="sidebar-card-body">
-                            <div class="d-grid gap-2">
-                                <button class="btn btn-outline-primary" onclick="reportFile()">
-                                    <i class="fas fa-flag me-2"></i>Báo cáo tài liệu
-                                </button>
-                                <a href="{% url 'upload_file' %}" class="btn btn-outline-warning">
-                                    <i class="fas fa-plus me-2"></i>Tạo tài liệu mới
-                                </a>
-                                <a href="{% url 'user_favorites' %}" class="btn btn-outline-info">
-                                    <i class="fas fa-heart me-2"></i>Tài liệu yêu thích
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Search Tips -->
-                    <div class="sidebar-card">
-                        <div class="sidebar-card-body">
-                            <h3 class="sidebar-title">
-                                <i class="fas fa-lightbulb me-2"></i>Mẹo tìm kiếm
-                            </h3>
-                            <ul class="search-tips">
-                                <li>Tìm kiếm theo tên tài liệu</li>
-                                <li>Tìm kiếm theo tác giả</li>
-                                <li>Tìm kiếm theo danh mục</li>
-                                <li>Sử dụng từ khóa ngắn gọn</li>
-                                <li>Kết hợp với bộ lọc</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Popular Categories -->
-                    <div class="sidebar-card">
-                        <div class="sidebar-card-body">
-                            <h3 class="sidebar-title">
-                                <i class="fas fa-star me-2"></i>Danh mục chính
-                            </h3>
-                            <div class="popular-categories">
-                                {% for category in parent_categories %}
-                                <a href="{% url 'search_files' %}?category={{ category.name }}" 
-                                   class="category-link">
-                                    <i class="fas fa-folder me-2"></i>{{ category.name }}
-                                </a>
-                                {% endfor %}
-                            </div>
-                        </div>
+                    <!-- No Results -->
+                    <div class="no-results" th:if="${documents == null or documents.isEmpty()}">
+                        <i class="fas fa-search"></i>
+                        <h4>Không tìm thấy tài liệu</h4>
+                        <p th:if="${param.keyword != null}">Không có tài liệu nào phù hợp với tìm kiếm "<span th:text="${param.keyword[0]}">keyword</span>"</p>
+                        <p th:if="${param.keyword == null}">Không có tài liệu nào</p>
+                        <a href="/" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>Về trang chủ
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'script/home/search.js' %}"></script>
-{% endblock %} 
+<!-- Footer -->
+<div th:replace="~{base/footer :: footer}"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/script/base/base.js}"></script>
+<script th:src="@{/script/base/footer.js}"></script>
+<script>
+    // Submit on Enter
+    const searchInputEl = document.getElementById('searchInput');
+    if (searchInputEl) {
+        searchInputEl.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                this.closest('form').submit();
+            }
+        });
+    }
+    // Sorting controls removed per request
+ </script>
+</body>
+</html>

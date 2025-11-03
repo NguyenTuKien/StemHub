@@ -15,10 +15,10 @@ public interface UserRepo extends JpaRepository<User, UUID> {
 
     Optional<User> findByEmail(String email);
 
-    boolean existsByUsername(String username);
-
-    boolean existsByEmail(String email);
-
     @Query("SELECT u FROM User u ORDER BY size(u.uploadFiles) DESC LIMIT 10")
     List<User> findTop10OrderByDocumentNumberDesc();
+
+    List<User> findByFullnameContainingIgnoreCase(String fullname);
+
+    List<User> findByUsernameContainingIgnoreCase(String username);
 }

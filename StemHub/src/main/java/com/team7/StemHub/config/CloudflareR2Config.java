@@ -23,7 +23,7 @@ public class CloudflareR2Config {
     @Value("${cloudflare.r2.secret-key}")
     private String secretKey;
 
-    @Value("${cloudflare.r2.bucket}")
+    @Value("${cloudflare.r2.bucket-name}")
     private String bucket;
 
     @Bean

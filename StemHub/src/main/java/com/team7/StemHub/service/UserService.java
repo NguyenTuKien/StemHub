@@ -2,12 +2,14 @@ package com.team7.StemHub.service;
 
 import com.team7.StemHub.dao.DocumentRepo;
 import com.team7.StemHub.dao.UserRepo;
+import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -31,8 +33,6 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
     }
 
-    // Giả sử bạn đã @Autowired DocumentRepository documentRepo;
-
     public void likeDocument(UUID userId, UUID documentId) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -44,5 +44,14 @@ public class UserService {
             user.getFavoritesDocuments().remove(document);
         }
         userRepo.save(user);
+    }
+
+    public Set<User> searchUsers(String keyword){
+        Set<User> result = new java.util.HashSet<>();
+        List<User> byFullName = userRepo.findByFullnameContainingIgnoreCase(keyword);
+        List<User> byUsername = userRepo.findByUsernameContainingIgnoreCase(keyword);
+        result.addAll(byFullName);
+        result.addAll(byUsername);
+        return result;
     }
 }
