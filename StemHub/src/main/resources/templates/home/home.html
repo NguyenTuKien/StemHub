@@ -80,7 +80,7 @@
                             <a th:href="@{/document/detail/{id}(id=${doc.documentId})}" class="text-decoration-none">
                                 <div class="featured-card-image">
                                     <!-- Use thumbnailUrl if available, otherwise default image -->
-                                    <img th:src="${doc.thumbnailUrl != null ? doc.thumbnailUrl : '/images/default-thumbnail.png'}" th:alt="${doc.title}" loading="lazy">
+                                    <img th:src="${doc.thumbnailUrl != null ? doc.thumbnailUrl : '/images/default.webp'}" th:alt="${doc.title}" loading="lazy">
                                     <div class="featured-card-overlay">
                                         <i class="fas fa-eye"></i>
                                     </div>
@@ -193,7 +193,9 @@
                                                   th:classappend="${stat.index < 3} ? 'bg-warning text-dark' : 'bg-secondary'"
                                                   th:text="${stat.index + 1}">1</span>
                                             <div>
-                                                <div class="fw-semibold" th:text="${u.fullname != null ? u.fullname : u.username}">Tên người dùng</div>
+                                                <a class="fw-semibold text-decoration-none"
+                                                   th:href="@{/user/profile(userId=${u.userId})}"
+                                                   th:text="${u.fullname != null ? u.fullname : u.username}">Tên người dùng</a>
                                             </div>
                                         </div>
                                         <div class="text-nowrap">

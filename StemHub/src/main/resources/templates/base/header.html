@@ -30,8 +30,8 @@
                     <img class="logo" th:src="@{/images/Logo_text.png}" alt="Logo" style="width: 150px; height: 60px;">
                 </a>
                 <ul class="nav mb-0 d-none d-lg-flex">
-                    <li><a th:href="@{/}" class="nav-link px-2" style="color:black; font-weight: bold; margin: 0 12px;">Tài liệu</a></li>
-                    <li><a th:href="@{/about}" class="nav-link px-2" style="color:black; font-weight: bold; margin: 0 12px;">Về chúng tôi</a></li>
+                    <li class="nav-item"><a th:href="@{/}" class="nav-link px-2" style="color:black; font-weight: bold; margin: 0 12px;">Tài liệu</a></li>
+                    <li class="nav-item"><a th:href="@{/about}" class="nav-link px-2" style="color:black; font-weight: bold; margin: 0 12px;">Về chúng tôi</a></li>
                 </ul>
             </div>
 
@@ -103,6 +103,61 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+        </div>
+    </div>
+    <!-- Categories Bar (second row) -->
+    <style>
+        .category-bar { 
+            background: #ffffff; 
+            /* thin separator between header rows */
+            border-top: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .category-bar .nav-link { 
+            color: #495057; 
+            font-weight: 600; 
+            font-size: 0.95rem;
+            padding: 12px 18px;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            border-radius: 0;
+            margin: 0;
+        }
+        .category-bar .nav-link:hover { 
+            color: #212529;
+            background-color: transparent;
+        }
+        .category-scroll { 
+            overflow-x: auto; 
+            white-space: nowrap; 
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .category-scroll::-webkit-scrollbar { display: none; }
+        .category-scroll .nav { 
+            flex-wrap: nowrap; 
+            gap: 40px;
+            justify-content: center; /* center the lower header */
+            margin: 0 auto; /* center the nav block within its container */
+            min-width: max-content;
+        }
+        @media (max-width: 991px) {
+            .category-scroll .nav { gap: 20px; }
+            .category-bar .nav-link { padding: 10px 14px; font-size: 0.9rem; }
+        }
+    </style>
+    <div class="category-bar">
+        <div class="container py-2">
+            <div class="category-scroll">
+                <ul class="nav align-items-center">
+                    <li class="nav-item" th:each="cat : ${T(com.team7.StemHub.model.enums.Category).values()}">
+                        <a class="nav-link"
+                           th:href="@{/category(category=${cat.name()})}"
+                           th:text="${cat.displayName}">Danh mục</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

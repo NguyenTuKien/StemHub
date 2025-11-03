@@ -10,6 +10,7 @@ public enum Category {
     RESEARCH_PAPER ("Bài nghiên cứu"),
     REPORT ("Báo cáo"),
     DOCUMENT ("Tài liệu học tập"),
+    EXAM ("Đề thi/Đề kiểm tra"),
     OTHERS ("Khác");
 
     private final String displayName;

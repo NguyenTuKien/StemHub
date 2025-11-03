@@ -39,7 +39,6 @@ public class Document {
     @JsonIgnore
     private Course course;
 
-    // Đổi tên trường này thành "author"
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
@@ -50,7 +49,7 @@ public class Document {
     @Column(name = "filePath", nullable = false)
     private String filePath;
 
-    @Column(name = "thumbnailPath", nullable = false)
+    @Column(name = "thumbnailPath")
     private String thumbnailPath;
 
     @Column(name = "description", columnDefinition = "NVARCHAR(500)")

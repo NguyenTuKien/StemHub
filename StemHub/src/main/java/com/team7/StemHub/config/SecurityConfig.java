@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         // Cho phép trang home cho tất cả users
-                        .requestMatchers("/", "/about","/home").permitAll()
+                        .requestMatchers("/", "/about","/home", "/category", "/category/**").permitAll()
 
                         // Cho phép tất cả static resources
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/style/**", "/script/**", "/Assets/**").permitAll()

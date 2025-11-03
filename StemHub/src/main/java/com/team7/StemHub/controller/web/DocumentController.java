@@ -8,6 +8,7 @@ import com.team7.StemHub.facade.R2StorageFacade;
 import com.team7.StemHub.model.Comment;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
+import com.team7.StemHub.model.enums.Category;
 import com.team7.StemHub.service.CommentService;
 import com.team7.StemHub.service.CourseService;
 import com.team7.StemHub.service.DocumentService;
@@ -54,6 +55,8 @@ public class DocumentController {
         List<CourseResponse> courses = courseService.getAllCourses().stream()
                 .map(CourseResponse::new)
                 .toList();
+    // Provide enum values so the form can submit the correct Category name while showing display names
+    model.addAttribute("categories", Category.values());
         model.addAttribute("userId", userId);
         model.addAttribute("courses", courses);
         return "home/upload"; // => templates/home/upload.html

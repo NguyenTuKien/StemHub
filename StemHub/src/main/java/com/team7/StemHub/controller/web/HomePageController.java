@@ -46,7 +46,7 @@ public class HomePageController {
         model.addAttribute("newestDocuments", newestDocuments);
         model.addAttribute("users", topUsers);
         model.addAttribute("categories", categories);
-        return "home/category";
+        return "home/home";
     }
 
     @GetMapping("/about")
