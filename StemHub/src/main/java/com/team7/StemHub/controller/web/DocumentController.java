@@ -78,14 +78,31 @@ public class DocumentController {
             }
             if (documentRequest.getFile() == null || documentRequest.getFile().isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Vui lòng chọn tệp tài liệu.");
+                redirectAttributes.addFlashAttribute("message", "Vui lòng chọn tệp tài liệu.");
+                redirectAttributes.addFlashAttribute("messageType", "error");
+                return "redirect:/document/upload";
+            }
+            // Enforce PDF-only uploads
+            String originalFilename = documentRequest.getFile().getOriginalFilename();
+            String contentType = documentRequest.getFile().getContentType();
+            boolean isPdfByName = originalFilename != null && originalFilename.toLowerCase().endsWith(".pdf");
+            boolean isPdfByMime = contentType != null && contentType.equalsIgnoreCase("application/pdf");
+            if (!(isPdfByName || isPdfByMime)) {
+                redirectAttributes.addFlashAttribute("error", "Chỉ cho phép tải lên tệp PDF (.pdf).");
+                redirectAttributes.addFlashAttribute("message", "Chỉ cho phép tải lên tệp PDF (.pdf).");
+                redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/document/upload";
             }
             r2StorageFacade.uploadDocument(documentRequest);
             redirectAttributes.addFlashAttribute("success", "Tải tài liệu lên thành công!");
+            redirectAttributes.addFlashAttribute("message", "Tải tài liệu lên thành công!");
+            redirectAttributes.addFlashAttribute("messageType", "success");
             return "redirect:/";
         } catch (Exception e) {
             log.error("Error uploading document: {}", e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", "Lỗi khi tải tài liệu lên: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("message", "Lỗi khi tải tài liệu lên: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("messageType", "error");
             return "redirect:/document/upload";
         }
     }
