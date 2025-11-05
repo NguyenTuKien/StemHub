@@ -1,6 +1,5 @@
 package com.team7.StemHub.config;
 
-import com.team7.StemHub.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép truy cập các trang xác thực
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/login", "/favicon.ico").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
 
                         // Cho phép trang home cho tất cả users

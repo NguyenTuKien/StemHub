@@ -28,7 +28,7 @@ public class HomePageController {
         List<DocumentResponse> newestDocumentsDTO = newestDocuments.stream().map(DocumentResponse::new).toList();
         List<User> topUsers = userService.getTop10UsersOrderByDocument();
         List<UserResponse> topUsersDTO = topUsers.stream().map(UserResponse::new).toList();
-        List<String> categories = Category.getAllDisplayNames();
+        List<Category> categories = Category.getAllDisplayNames();
         model.addAttribute("topDocuments", topDocumentsDTO);
         model.addAttribute("newestDocuments", newestDocumentsDTO);
         model.addAttribute("users", topUsersDTO);
@@ -41,7 +41,7 @@ public class HomePageController {
         List <DocumentResponse> topDocuments = documentService.getDocumentsByCategorySortedByDownloadCount(category).stream().map(DocumentResponse::new).toList();
         List <DocumentResponse> newestDocuments = documentService.getDocumentsByCategorySortedByCreateAt(category).stream().map(DocumentResponse::new).toList();
         List <UserResponse> topUsers = userService.getTop10UsersOrderByDocument().stream().map(UserResponse::new).toList();
-        List <String> categories = Category.getAllDisplayNames();
+        List <Category> categories = Category.getAllDisplayNames();
         model.addAttribute("topDocuments", topDocuments);
         model.addAttribute("newestDocuments", newestDocuments);
         model.addAttribute("users", topUsers);

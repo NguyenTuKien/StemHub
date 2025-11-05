@@ -108,9 +108,8 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="courseName" class="form-label">Môn học/Khoá học <span class="text-danger">*</span></label>
-                                <!-- Use scrollable list from provided courses -->
-                                <select class="form-select" id="courseName" name="courseName" size="8" required>
+                                <label for="courseName" class="form-label">Môn học/Khoá học <span class="text-danger">*</span></label><!-- Changed to standard dropdown -->
+                                <select class="form-select" id="courseName" name="courseName" required>
                                     <option value="" disabled selected>Chọn môn học/khoá học</option>
                                     <option th:each="c : ${courses}"
                                             th:value="${c.courseName}"
@@ -118,7 +117,7 @@
                                         Course Name
                                     </option>
                                 </select>
-                                <small class="text-muted">Cuộn để xem thêm môn học</small>
+                                <small class="text-muted">Chọn một môn học/khoá học từ danh sách</small>
                             </div>
 
                 <input type="hidden" id="authorId" name="authorId" th:value="${userId}"
