@@ -96,14 +96,10 @@
                             <div class="col-md-4 mb-3">
                                 <label for="category" class="form-label">Danh mục</label>
                                 <select class="form-select" id="category" name="category" required>
-                                    <option value="">Chọn danh mục</option>
-                                    <option value="PRESENTATION">Bài thuyết trình</option>
-                                    <option value="ESSAY">Bài luận</option>
-                                    <option value="RESEARCH_PAPER">Bài nghiên cứu</option>
-                                    <option value="REPORT">Báo cáo</option>
-                                    <option value="DOCUMENT">Tài liệu học tập</option>
-                                    <option value="EXAM">Đề thi/Đề kiểm tra</option>
-                                    <option value="OTHERS">Khác</option>
+                                    <option value="" disabled selected>Chọn danh mục</option>
+                                    <option th:each="cat : ${T(com.team7.StemHub.model.enums.Category).values()}"
+                                            th:value="${cat.name()}"
+                                            th:text="${cat.displayName}">Category</option>
                                 </select>
                             </div>
 
