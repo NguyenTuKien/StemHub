@@ -41,7 +41,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "fullname", nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(name = "fullname", nullable = false, length = 100)
     private String fullname;
 
     @Column(name = "role", nullable = false)

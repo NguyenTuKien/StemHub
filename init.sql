@@ -1,9 +1,6 @@
-WAITFOR DELAY '00:00:05'
-GO
-
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'TicketBooth')
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'StemHub')
 BEGIN
-    CREATE DATABASE TicketBooth;
-    PRINT 'Database TicketBooth created.';
+    CREATE DATABASE StemHub;
+    PRINT 'Database StemHub created.';
 END;
 GO

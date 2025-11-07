@@ -2,9 +2,11 @@ package com.team7.StemHub.service;
 
 import com.team7.StemHub.dao.DocumentRepo;
 import com.team7.StemHub.dao.UserRepo;
+import com.team7.StemHub.exception.NotFoundException;
 import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +25,13 @@ public class UserService {
         return userRepo.findTop10OrderByDocumentNumberDesc();
     }
 
+    public User getUserByIdWithUploadFile(UUID id){
+        return userRepo.findByIdWithUploads(id).orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+    }
+
     public User getUserById(UUID id) {
         return userRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
     }
 
     public User findByUsername(String username) {
@@ -33,17 +39,18 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
     }
 
+    @Transactional
     public void likeDocument(UUID userId, UUID documentId) {
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        User user = userRepo.findByIdWithFavorites(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         Document document = documentRepo.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found with id: " + documentId));
-        if (!user.getFavoritesDocuments().contains(document)) {
-            user.getFavoritesDocuments().add(document);
+                .orElseThrow(() -> new RuntimeException("Document not found: " + documentId));
+        Set<Document> favorites = user.getFavoritesDocuments();
+        if (favorites.contains(document)) {
+            favorites.remove(document);
         } else {
-            user.getFavoritesDocuments().remove(document);
+            favorites.add(document);
         }
-        userRepo.save(user);
     }
 
     public Set<User> searchUsers(String keyword){
@@ -53,5 +60,10 @@ public class UserService {
         result.addAll(byFullName);
         result.addAll(byUsername);
         return result;
+    }
+
+    public User findByUsernameWithAllData(String username) {
+        return userRepo.findByUsernameWithAllData(username)
+                .orElseThrow(() -> new NotFoundException("User not found: " + username));
     }
 }

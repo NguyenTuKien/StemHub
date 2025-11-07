@@ -82,17 +82,18 @@ public class DocumentController {
                 redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/document/upload";
             }
-            // Enforce PDF-only uploads
+
+            // Allow PDF, DOCX, PPTX. DOCX/PPTX will be converted to PDF in R2StorageFacade
             String originalFilename = documentRequest.getFile().getOriginalFilename();
-            String contentType = documentRequest.getFile().getContentType();
-            boolean isPdfByName = originalFilename != null && originalFilename.toLowerCase().endsWith(".pdf");
-            boolean isPdfByMime = contentType != null && contentType.equalsIgnoreCase("application/pdf");
-            if (!(isPdfByName || isPdfByMime)) {
-                redirectAttributes.addFlashAttribute("error", "Chỉ cho phép tải lên tệp PDF (.pdf).");
-                redirectAttributes.addFlashAttribute("message", "Chỉ cho phép tải lên tệp PDF (.pdf).");
+            String lower = originalFilename != null ? originalFilename.toLowerCase() : "";
+            boolean allowed = lower.endsWith(".pdf") || lower.endsWith(".docx") || lower.endsWith(".pptx");
+            if (!allowed) {
+                redirectAttributes.addFlashAttribute("error", "Chỉ hỗ trợ các định dạng: PDF (.pdf), DOCX (.docx), PPTX (.pptx).");
+                redirectAttributes.addFlashAttribute("message", "Chỉ hỗ trợ các định dạng: PDF (.pdf), DOCX (.docx), PPTX (.pptx).");
                 redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/document/upload";
             }
+
             r2StorageFacade.uploadDocument(documentRequest);
             redirectAttributes.addFlashAttribute("success", "Tải tài liệu lên thành công!");
             redirectAttributes.addFlashAttribute("message", "Tải tài liệu lên thành công!");

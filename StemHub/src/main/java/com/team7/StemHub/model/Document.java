@@ -31,7 +31,7 @@ public class Document {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @Column(name = "title", nullable = false, columnDefinition = "NVARCHAR(200)")
+    @Column(name = "title", nullable = false, length = 200)
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,7 +52,7 @@ public class Document {
     @Column(name = "thumbnailPath")
     private String thumbnailPath;
 
-    @Column(name = "description", columnDefinition = "NVARCHAR(500)")
+    @Column(name = "description", length = 1000)
     private String description;
 
     @Column(name = "downloadCount", nullable = false)

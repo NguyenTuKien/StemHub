@@ -1,0 +1,47 @@
+services:
+  stemhub:
+    build: ./StemHub
+    container_name: stemhub
+    ports: ["8080:8080"]
+    volumes:
+      - ./StemHub/.m2:/root/.m2
+      - ./StemHub/logs:/app/logs
+    depends_on:
+      - mssql
+    environment:
+      - spring.datasource.url=jdbc:sqlserver://mssql:1433;databaseName=StemHub;encrypt=false;trustServerCertificate=true
+      - spring.datasource.username=sa
+      - spring.datasource.password=TestAcc@1234
+    networks:
+      - default
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: stemhub-db
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "TestAcc@1234"
+      MSSQL_PID: "Developer"
+    ports: ["1433:1433"]
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - default
+
+  mssql-tools:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: sqlcmd-client
+    depends_on:
+      - mssql
+    entrypoint: [ "/bin/bash" ]
+    tty: true
+    networks:
+      - default
+
+networks:
+  default:
+
+volumes:
+  sqlserver_data:
