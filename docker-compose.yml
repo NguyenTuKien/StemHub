@@ -7,41 +7,42 @@ services:
       - ./StemHub/.m2:/root/.m2
       - ./StemHub/logs:/app/logs
     depends_on:
-      - mssql
+      mysql:
+        condition: service_healthy
     environment:
-      - spring.datasource.url=jdbc:sqlserver://mssql:1433;databaseName=StemHub;encrypt=false;trustServerCertificate=true
-      - spring.datasource.username=sa
-      - spring.datasource.password=TestAcc@1234
+      - spring.datasource.url=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?createDatabaseIfNotExist=true
+      - spring.datasource.username=${MYSQL_USER}
+      - spring.datasource.password=${MYSQL_PASSWORD}
+      - jwt.secret.key=${JWT_SECRET_KEY}
+      - cloudflare.r2.account-id=${CLOUDFLARE_R2_ACCOUNT_ID}
+      - cloudflare.r2.access-key=${CLOUDFLARE_R2_ACCESS_KEY}
+      - cloudflare.r2.secret-key=${CLOUDFLARE_R2_SECRET_KEY}
+      - cloudflare.r2.bucket-name=${CLOUDFLARE_R2_BUCKET_NAME}
+      - cloudflare.r2.endpoint-url=${CLOUDFLARE_R2_ENDPOINT_URL}
+      - cloudflare.r2.public-url=${CLOUDFLARE_R2_PUBLIC_URL}
     networks:
-      - default
+      - stemhub-network
 
-  mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: stemhub-db
-    restart: always
-    environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: "TestAcc@1234"
-      MSSQL_PID: "Developer"
-    ports: ["1433:1433"]
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
     volumes:
-      - sqlserver_data:/var/opt/mssql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      timeout: 10s
+      retries: 10
     networks:
-      - default
-
-  mssql-tools:
-    image: mcr.microsoft.com/mssql-tools
-    container_name: sqlcmd-client
-    depends_on:
-      - mssql
-    entrypoint: [ "/bin/bash" ]
-    tty: true
-    networks:
-      - default
-
-networks:
-  default:
+      - stemhub-network
 
 volumes:
-  sqlserver_data:
+  mysql-data:
+
+networks:
+  stemhub-network:
+    driver: bridge

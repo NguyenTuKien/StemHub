@@ -5,17 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="37cd1c1d-710e-4074-ab96-a960e7e82344" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/StemHubApplication.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/runConfigurations/StemHubApplication.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/StemHub/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/controller/web/DocumentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/controller/web/DocumentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/controller/web/FaviconController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/facade/R2StorageFacade.java" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/facade/R2StorageFacade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/util/DocxToPdfUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/util/DocxToPdfUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/util/PptxToPdfUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/src/main/java/com/team7/StemHub/util/PptxToPdfUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/StemHub/src/main/resources/static/script/home/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/src/main/resources/static/script/home/upload.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/StemHub/src/main/resources/templates/home/upload.html" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/src/main/resources/templates/home/upload.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StemHub/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/StemHub/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,40 +55,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.MongoClientConnectionExample.executor": "Debug",
-    "Application.StemHubApplication.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.StemHubApplication.executor": "Run",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "develop",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/ngtukien/Documents/Team7",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "vcs.Git",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.MongoClientConnectionExample.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.StemHubApplication.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.StemHubApplication.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/ngtukien/Documents/Team7&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/StemHub/src/main/resources" />
       <recent name="$PROJECT_DIR$/StemHub" />
@@ -188,6 +184,11 @@
       <workItem from="1762326997415" duration="638000" />
       <workItem from="1762346228484" duration="1250000" />
       <workItem from="1762495083106" duration="7795000" />
+      <workItem from="1762524469296" duration="70000" />
+      <workItem from="1762528198162" duration="1585000" />
+      <workItem from="1762559172283" duration="113000" />
+      <workItem from="1762612992404" duration="208000" />
+      <workItem from="1762613427141" duration="1421000" />
     </task>
     <servers />
   </component>
