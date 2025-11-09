@@ -699,12 +699,16 @@
 /* Grid layout for results */
 .document-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
+    grid-template-columns: 1fr; /* mobile default */
 }
 
-@media (min-width: 1200px) {
-    .document-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+@media (min-width: 576px) {
+    .document-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 992px) {
+    .document-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 .file-title {
@@ -836,10 +840,28 @@
     padding: 0.75rem 1rem;
     border-radius: 12px;
     margin-bottom: 0.75rem;
+    margin-right: 1.2rem;
     transition: all 0.2s ease;
     background: #f8f9fa;
     border: 1px solid #e9ecef;
 }
+
+/* Make course/user anchor items look like cards (no link underline/color) */
+.course-item, .user-item {
+  text-decoration: none;
+  color: inherit;
+}
+.course-item:link, .course-item:visited,
+.user-item:link, .user-item:visited {
+  text-decoration: none;
+  color: inherit;
+}
+.course-item:hover, .user-item:hover {
+  text-decoration: none;
+  color: inherit;
+}
+.course-item .item-info h6,
+.user-item .item-info h6 { color: #2c3e50; margin: 0; }
 
 .course-item:hover, .user-item:hover {
     background: #eef7f6;
@@ -968,6 +990,51 @@
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(23, 162, 184, 0.4);
     border-color: transparent;
+}
+
+/* Scrollable courses list */
+.courses-card {
+    display: flex;
+    flex-direction: column;
+    max-height: 500px; /* limit overall height so it can scroll */
+}
+.courses-card .sidebar-card-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+.courses-scroll {
+    overflow-y: auto;
+    padding-right: 4px; /* room for scrollbar */
+}
+.courses-scroll::-webkit-scrollbar { width: 8px; }
+.courses-scroll::-webkit-scrollbar-track { background: transparent; }
+.courses-scroll::-webkit-scrollbar-thumb { background: #c3d1d0; border-radius: 4px; }
+.courses-scroll::-webkit-scrollbar-thumb:hover { background: #95b4b2; }
+
+@media (max-width: 992px) {
+    .courses-card { max-height: 350px; }
+}
+
+/* Scrollable users list like courses */
+.users-card {
+    display: flex;
+    flex-direction: column;
+    max-height: 350px; /* slightly smaller than courses to fit below */
+}
+.users-card .sidebar-card-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+.users-scroll { overflow-y: auto; padding-right: 4px; }
+.users-scroll::-webkit-scrollbar { width: 8px; }
+.users-scroll::-webkit-scrollbar-track { background: transparent; }
+.users-scroll::-webkit-scrollbar-thumb { background: #c3d1d0; border-radius: 4px; }
+.users-scroll::-webkit-scrollbar-thumb:hover { background: #95b4b2; }
+
+@media (max-width: 992px) {
+  .users-card { max-height: 300px; }
 }
 
 /* Scroll to results button animation */
@@ -1210,3 +1277,15 @@ html {
         max-height: 250px;
     }
 }
+
+/* Documents scroll wrapper and column switcher */
+.documents-scroll {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.documents-scroll::-webkit-scrollbar { width: 8px; }
+.documents-scroll::-webkit-scrollbar-thumb { background: #c3d1d0; border-radius: 4px; }
+.documents-scroll::-webkit-scrollbar-thumb:hover { background: #95b4b2; }
+
+

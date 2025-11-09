@@ -10,16 +10,19 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      - spring.datasource.url=jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?createDatabaseIfNotExist=true
-      - spring.datasource.username=${MYSQL_USER}
-      - spring.datasource.password=${MYSQL_PASSWORD}
-      - jwt.secret.key=${JWT_SECRET_KEY}
-      - cloudflare.r2.account-id=${CLOUDFLARE_R2_ACCOUNT_ID}
-      - cloudflare.r2.access-key=${CLOUDFLARE_R2_ACCESS_KEY}
-      - cloudflare.r2.secret-key=${CLOUDFLARE_R2_SECRET_KEY}
-      - cloudflare.r2.bucket-name=${CLOUDFLARE_R2_BUCKET_NAME}
-      - cloudflare.r2.endpoint-url=${CLOUDFLARE_R2_ENDPOINT_URL}
-      - cloudflare.r2.public-url=${CLOUDFLARE_R2_PUBLIC_URL}
+      - SERVER_ADDRESS=0.0.0.0
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - CLOUDFLARE_R2_ACCOUNT_ID=${CLOUDFLARE_R2_ACCOUNT_ID}
+      - CLOUDFLARE_R2_ACCESS_KEY=${CLOUDFLARE_R2_ACCESS_KEY}
+      - CLOUDFLARE_R2_SECRET_KEY=${CLOUDFLARE_R2_SECRET_KEY}
+      - CLOUDFLARE_R2_BUCKET_NAME=${CLOUDFLARE_R2_BUCKET_NAME}
+      - CLOUDFLARE_R2_ENDPOINT_URL=${CLOUDFLARE_R2_ENDPOINT_URL}
+      - CLOUDFLARE_R2_PUBLIC_URL=${CLOUDFLARE_R2_PUBLIC_URL}
     networks:
       - stemhub-network
 

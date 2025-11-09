@@ -7,7 +7,10 @@ import lombok.*;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(of = {"courseId"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +22,6 @@ import java.util.List;
 public class Course {
     @Id
     @Column(name = "courseId", nullable = false)
-    @EqualsAndHashCode.Include // QUAN TRỌNG: Chỉ định so sánh bằng ID
     private String courseId;
 
     @Column(name = "courseName", nullable = false, length = 200)
