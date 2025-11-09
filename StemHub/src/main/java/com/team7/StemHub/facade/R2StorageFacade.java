@@ -15,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static com.team7.StemHub.util.DocxToPdfUtil.convertDocxToPdf;
 import static com.team7.StemHub.util.ExtensionUtil.getFileExtension;
-import static com.team7.StemHub.util.PptxToPdfUtil.convertPptxToPdf;
 import static com.team7.StemHub.util.ThumbnailUtil.createThumbnailFromPdf;
 
 @Service
@@ -71,18 +69,6 @@ public class R2StorageFacade {
             try {
                 // Check file extension and convert to PDF if needed
                 String originalFilename = dto.getFile().getOriginalFilename();
-                if (originalFilename != null) {
-                    String fileExtension = getFileExtension(originalFilename).toLowerCase();
-
-                    if ("docx".equals(fileExtension)) {
-                        log.info("Converting DOCX file to PDF: {}", originalFilename);
-                        dto.setFile(convertDocxToPdf(dto.getFile()));
-                    } else if ("pptx".equals(fileExtension)) {
-                        log.info("Converting PPTX file to PDF: {}", originalFilename);
-                        dto.setFile(convertPptxToPdf(dto.getFile()));
-                    }
-                }
-
                 // Upload main file
                 fileUrl = mediaService.uploadFile(dto.getFile());
                 log.info("Main file uploaded successfully: {}", fileUrl);

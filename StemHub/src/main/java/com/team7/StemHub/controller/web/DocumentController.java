@@ -83,13 +83,14 @@ public class DocumentController {
                 return "redirect:/document/upload";
             }
 
-            // Allow PDF, DOCX, PPTX. DOCX/PPTX will be converted to PDF in R2StorageFacade
+            // Chỉ cho phép PDF
             String originalFilename = documentRequest.getFile().getOriginalFilename();
             String lower = originalFilename != null ? originalFilename.toLowerCase() : "";
-            boolean allowed = lower.endsWith(".pdf") || lower.endsWith(".docx") || lower.endsWith(".pptx");
+            boolean allowed = lower.endsWith(".pdf");
             if (!allowed) {
-                redirectAttributes.addFlashAttribute("error", "Chỉ hỗ trợ các định dạng: PDF (.pdf), DOCX (.docx), PPTX (.pptx).");
-                redirectAttributes.addFlashAttribute("message", "Chỉ hỗ trợ các định dạng: PDF (.pdf), DOCX (.docx), PPTX (.pptx).");
+                String err = "Chỉ hỗ trợ file PDF (.pdf).";
+                redirectAttributes.addFlashAttribute("error", err);
+                redirectAttributes.addFlashAttribute("message", err);
                 redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/document/upload";
             }

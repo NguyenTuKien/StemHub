@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (response.ok) {
-                // Success
+                // Success: keep the same button color, just update text
                 if (submitBtn) {
                     submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Tải lên thành công!';
                     submitBtn.classList.remove('btn-primary');
@@ -306,11 +306,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Validate file type - Only PDF is allowed
-            const allowedTypes = ['.pdf', '.docx', '.pptx'];
+            const allowedTypes = ['.pdf'];
             const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
             
             if (!allowedTypes.includes(fileExtension)) {
-                alert('Định dạng tệp không được hỗ trợ! Chỉ cho phép tệp PDF (.pdf), DOCX (.docx), PPTX (.pptx).');
+                alert('Chỉ hỗ trợ file PDF (.pdf).');
                 fileInput.value = '';
                 resetUploadArea();
                 return;
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
         dragDropArea.querySelector('.upload-content').innerHTML = `
             <i class="fas fa-cloud-upload-alt upload-icon"></i>
             <h4>Kéo thả tệp vào đây hoặc click để chọn</h4>
-            <p class="text-muted">Hỗ trợ: PDF (.pdf), DOCX (.docx), PPTX (.pptx)</p>
+            <p class="text-muted">Chỉ hỗ trợ: PDF (.pdf)</p>
             <p class="text-muted">Kích thước tối đa: 500MB</p>
         `;
     }

@@ -196,26 +196,36 @@
             }
         }
 
-        // Password match validation
         const password = document.getElementById('password');
         const confirmPassword = document.getElementById('confirmPassword');
 
         function validatePassword() {
-            if (password.value !== confirmPassword.value) {
-                confirmPassword.setCustomValidity("Mật khẩu không khớp");
-            } else {
+            // If confirm empty, clear states
+            if (!confirmPassword.value) {
+                confirmPassword.classList.remove('is-valid','is-invalid');
                 confirmPassword.setCustomValidity('');
+                return;
+            }
+            if (password.value === confirmPassword.value) {
+                confirmPassword.classList.remove('is-invalid');
+                confirmPassword.classList.add('is-valid');
+                confirmPassword.setCustomValidity('');
+            } else {
+                confirmPassword.classList.remove('is-valid');
+                confirmPassword.classList.add('is-invalid');
+                confirmPassword.setCustomValidity('Mật khẩu không khớp');
             }
         }
 
-        password.addEventListener('change', validatePassword);
-        confirmPassword.addEventListener('keyup', validatePassword);
+        password.addEventListener('input', validatePassword);
+        confirmPassword.addEventListener('input', validatePassword);
 
         // Form validation
         (function() {
             'use strict';
             const form = document.getElementById('registerForm');
             form.addEventListener('submit', function(event) {
+                validatePassword();
                 if (!form.checkValidity()) {
                     event.preventDefault();
                     event.stopPropagation();
