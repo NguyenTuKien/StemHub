@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 1000);
                 } else {
                     // Show error message
-                    showError(data.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
+                    showError(data.message || 'Username hoặc password không đúng');
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>Đăng nhập';
                     submitBtn.classList.remove('btn-loading');
