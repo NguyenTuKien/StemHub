@@ -86,7 +86,7 @@
                                     </div>
                                     <div class="featured-card-badge">
                                         <span class="badge bg-warning">
-                                            <i class="fas fa-star me-1"></i>Nổi bật
+                                            <ii class="fas fa-star me-1"></ii>Nổi bật
                                         </span>
                                     </div>
                                 </div>
@@ -99,7 +99,8 @@
                                     </div>
                                     <div class="featured-card-footer">
                                         <div class="featured-card-info">
-                                            <span class="badge bg-primary me-1" th:text="${doc.category}">Category</span>
+                                            <span class="badge bg-primary me-1"
+                                                  th:text="${T(com.team7.StemHub.model.enums.Category).valueOf(doc.category).displayName}">Category</span>
                                             <small class="text-muted">
                                                 <i class="fas fa-download me-1"></i>
                                                 <span th:text="${doc.downloadCount}">0 lượt tải</span><span> lượt tải</span>
@@ -154,7 +155,8 @@
                                                 <span th:text="${doc.authorName != null ? doc.authorName : 'Anonymous'}">Tác giả</span>
                                             </div>
                                             <div class="recent-item-stats">
-                                                <span class="badge bg-primary me-2" th:text="${doc.category}">Category</span>
+                                                <span class="badge bg-primary me-2"
+                                                      th:text="${T(com.team7.StemHub.model.enums.Category).valueOf(doc.category).displayName}">Category</span>
                                                 <small class="text-muted" th:if="${doc.createdAt != null}">
                                                     <i class="fas fa-calendar me-1"></i>
                                                     <span th:text="${#temporals.format(doc.createdAt, 'dd/MM/yyyy')}">Ngày tạo</span>

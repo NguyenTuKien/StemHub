@@ -70,7 +70,8 @@
                                 </div>
                                 <div class="document-meta-item">
                                     <i class="fas fa-tag text-warning"></i>
-                                    <span><strong>Danh mục:</strong> <span class="badge bg-primary" th:text="${document.category}">Category</span></span>
+                                    <span><strong>Danh mục:</strong> <span class="badge bg-primary"
+      th:text="${T(com.team7.StemHub.model.enums.Category).valueOf(document.category).displayName}">Category</span></span>
                                 </div>
                                 <div class="document-meta-item" th:if="${document.courseName != null}">
                                     <i class="fas fa-book text-info"></i>

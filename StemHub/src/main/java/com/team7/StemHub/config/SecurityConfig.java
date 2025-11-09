@@ -1,6 +1,5 @@
 package com.team7.StemHub.config;
 
-import com.team7.StemHub.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

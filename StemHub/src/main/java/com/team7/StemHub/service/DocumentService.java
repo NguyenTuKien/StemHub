@@ -42,8 +42,8 @@ public class DocumentService {
     }
 
     public Document getDocumentById(UUID id) {
-        return documentRepo.findById(id)
-                .orElseThrow(() -> new RuntimeException("Document not found with id: " + id));
+        return documentRepo.findByIdWithAuthorAndCourse(id)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
     }
 
     public List<Document> getDocumentsByCourse(Course course) {

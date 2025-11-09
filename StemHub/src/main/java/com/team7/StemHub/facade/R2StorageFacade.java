@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static com.team7.StemHub.util.ExtensionUtil.getFileExtension;
+import static com.team7.StemHub.util.ThumbnailUtil.createThumbnailFromPdf;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -64,6 +67,8 @@ public class R2StorageFacade {
             String thumbnailUrl = null;
 
             try {
+                // Check file extension and convert to PDF if needed
+                String originalFilename = dto.getFile().getOriginalFilename();
                 // Upload main file
                 fileUrl = mediaService.uploadFile(dto.getFile());
                 log.info("Main file uploaded successfully: {}", fileUrl);
@@ -72,9 +77,9 @@ public class R2StorageFacade {
                 if (dto.getThumbnail() != null && !dto.getThumbnail().isEmpty()) {
                     thumbnailUrl = mediaService.uploadFile(dto.getThumbnail());
                     log.info("Thumbnail uploaded successfully: {}", thumbnailUrl);
-                } else if (mediaService.getFileExtension(fileUrl).equals("pdf")) {
+                } else if (getFileExtension(fileUrl).equals("pdf")) {
                     try {
-                        byte[] thumbnailBytes = mediaService.createThumbnailFromPdf(dto.getFile());
+                        byte[] thumbnailBytes = createThumbnailFromPdf(dto.getFile());
                         thumbnailUrl = mediaService.uploadFile(thumbnailBytes, "thumbnail.jpg");
                         log.info("PDF thumbnail generated and uploaded: {}", thumbnailUrl);
                     } catch (Exception e) {
@@ -113,4 +118,5 @@ public class R2StorageFacade {
             throw e;
         }
     }
+
 }

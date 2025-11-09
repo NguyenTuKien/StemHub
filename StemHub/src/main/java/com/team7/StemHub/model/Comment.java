@@ -32,7 +32,7 @@ public class Comment {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @Column(name = "content", nullable = false, columnDefinition = "NVARCHAR(1000)")
+    @Column(name = "content", nullable = false, length = 1000)
     private String content;
 
     @CreationTimestamp

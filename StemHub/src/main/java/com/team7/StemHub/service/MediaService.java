@@ -13,13 +13,11 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import org.apache.pdfbox.Loader;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
+
+import static com.team7.StemHub.util.ExtensionUtil.getFileExtension;
 
 @Service
 @RequiredArgsConstructor
@@ -33,27 +31,6 @@ public class MediaService {
     private String publicUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(MediaService.class);
-
-    public byte[] createThumbnailFromPdf(MultipartFile pdfFile) throws IOException {
-        // 1. Tải file PDF từ MultipartFile vào bộ nhớ
-        try (PDDocument document = Loader.loadPDF(pdfFile.getBytes())) {
-            // 2. Tạo một đối tượng renderer
-            PDFRenderer pdfRenderer = new PDFRenderer(document);
-            // 3. Render trang đầu tiên với scale nhỏ hơn để tránh overflow (1.5 thay vì 150)
-            BufferedImage image = pdfRenderer.renderImage(0, 1.5f);
-            // 4. Chuyển BufferedImage thành byte[] (định dạng JPG)
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                // Ghi ảnh vào stream, định dạng "jpg"
-                ImageIO.write(image, "jpg", baos);
-                // Hoàn tất và lấy mảng byte
-                baos.flush();
-                return baos.toByteArray();
-            }
-        } catch (IOException e) {
-            logger.error("Failed to create thumbnail from PDF: {}", e.getMessage());
-            throw e;
-        }
-    }
 
     public String uploadFile(MultipartFile file) {
         // 1. Resolve filename and content type
@@ -127,14 +104,4 @@ public class MediaService {
         // *** SỬ DỤNG 'publicUrl' (sẽ sửa ở Lỗi 2) ***
         return publicUrl + "/" + bucket + "/" + key;
     }
-
-    public String getFileExtension(String filename) {
-        int idx = filename.lastIndexOf('.');
-        if (idx < 0 || idx == filename.length()-1) {
-            throw new IllegalArgumentException("Invalid file extension in filename: " + filename);
-        }
-        return filename.substring(idx+1);
-    }
-
-
 }

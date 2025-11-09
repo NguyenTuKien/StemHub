@@ -31,7 +31,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public String uploadDocument(@RequestParam UUID userId, Model model) {
-        User user = userService.getUserById(userId);
+        User user = userService.getUserByIdWithUploadFile(userId);
         UserResponse userResponse = new UserResponse(user);
         List<Document> documents = documentService.getAllUploadDocumentsByAuthor(user);
         List<DocumentResponse> documentDTO = documents.stream().map(DocumentResponse::new).toList();
@@ -47,15 +47,14 @@ public class UserController {
         if (authentication != null && authentication.isAuthenticated()
                 && authentication.getPrincipal() instanceof UserDetails userDetails) {
             String username = userDetails.getUsername();
-            // Query database to get User entity
-            currentUser = userService.findByUsername(username);
+            currentUser = userService.findByUsernameWithAllData(username);
         }
-        
-        Set<Document> favoriteDocuments = currentUser.getFavoritesDocuments();
-        UserResponse userResponse = new UserResponse(currentUser);
+        Set<Document> favoriteDocuments = currentUser.getFavoritesDocuments(); // Hoạt động
+        UserResponse userResponse = new UserResponse(currentUser); // Hoạt động
         Set<DocumentResponse> favoriteDocumentsDTO = favoriteDocuments.stream()
-                .map(DocumentResponse::new)
+                .map(DocumentResponse::new) // Hoạt động
                 .collect(toSet());
+
         model.addAttribute("user", userResponse);
         model.addAttribute("documents", favoriteDocumentsDTO);
         return "home/favorite";
