@@ -4,6 +4,9 @@ import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
 import com.team7.StemHub.model.enums.Category;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,33 +19,36 @@ import java.util.UUID;
 @Repository
 public interface DocumentRepo extends JpaRepository<Document, UUID> {
 
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course WHERE d.id = :id")
-    Optional<Document> findByIdWithAuthorAndCourse(@Param("id") UUID id);
+    @Override
+    @EntityGraph(attributePaths = { "author", "course" })
+    Optional<Document> findById(UUID id);
 
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course ORDER BY d.createAt DESC")
-    List<Document> findTop20ByOrderByCreateAtDesc();
+    @EntityGraph(attributePaths = { "author", "course" })
+    Page<Document> findAllByOrderByCreateAtDesc(Pageable pageable);
 
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course ORDER BY d.downloadCount DESC")
-    List<Document> findTop10ByOrderByDownloadCountDesc();
+    @EntityGraph(attributePaths = { "author", "course" })
+    List<Document> findTop5ByOrderByDownloadCountDesc();
 
     @Query("SELECT COUNT(DISTINCT u.id) FROM User u JOIN u.favoritesDocuments d WHERE d.id = :documentId")
     Long countFavoritesById(@Param("documentId") UUID documentId);
 
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course WHERE d.course = :course")
-    List<Document> findByCourse(@Param("course") Course course);
+    @EntityGraph(attributePaths = { "author", "course" })
+    List<Document> findByCourse(Course course);
 
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course WHERE d.author = :author")
-    List<Document> findAllByAuthor(@Param("author") User user);
+    @EntityGraph(attributePaths = { "author", "course" })
+    Page<Document> findAllByAuthorOrderByCreateAtDesc(User user, Pageable pageable);
 
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course WHERE lower(d.title) LIKE lower(concat('%', :title, '%'))")
-    List<Document> findByTitleContainingIgnoreCase(@Param("title") String title);
+    @Query("SELECT d FROM Document d JOIN d.course c WHERE " +
+            "LOWER(d.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(d.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(c.courseName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "ORDER BY d.title")
+    @EntityGraph(attributePaths = { "author", "course" })
+    Page<Document> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course WHERE lower(d.description) LIKE lower(concat('%', :description, '%'))")
-    List<Document> findByDescriptionContainingIgnoreCase(@Param("description") String description);
+    @EntityGraph(attributePaths = { "author", "course" })
+    List<Document> findTop15ByCategoryOrderByDownloadCountDesc(Category category);
 
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course WHERE d.category = :category ORDER BY d.downloadCount DESC")
-    List<Document> findTop15ByCategoryOrderByDownloadCountDesc(@Param("category") Category category);
-
-    @Query("SELECT d FROM Document d JOIN FETCH d.author JOIN FETCH d.course WHERE d.category = :category ORDER BY d.createAt DESC")
-    List<Document> findByCategoryOrderByCreateAtDesc(@Param("category") Category category);
+    @EntityGraph(attributePaths = { "author", "course" })
+    Page<Document> findByCategoryOrderByCreateAtDesc(Category category, Pageable pageable);
 }

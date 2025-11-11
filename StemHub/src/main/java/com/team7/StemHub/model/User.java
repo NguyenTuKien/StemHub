@@ -12,13 +12,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
+@Getter
+@Setter
+@ToString(exclude = {"uploadFiles", "comments", "favoritesDocuments"})
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"username"}),
         @UniqueConstraint(columnNames = {"email"})

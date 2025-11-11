@@ -217,6 +217,36 @@
     padding: 1.5rem;
 }
 
+/* Scrollable comments container */
+.comments-scroll {
+    max-height: 280px; /* adjust as needed */
+    overflow-y: auto;
+    margin: 0 -0.5rem; /* allow scrollbar breathing room */
+    padding: 0 0.5rem;
+    scroll-behavior: smooth;
+}
+
+.comments-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+.comments-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.comments-scroll::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #006056, #00897B);
+    border-radius: 4px;
+}
+.comments-scroll::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #004f47, #007367);
+}
+
+/* Firefox */
+.comments-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #006056 #f1f1f1;
+}
+
 /* Comments */
 .comment-item {
     display: flex;

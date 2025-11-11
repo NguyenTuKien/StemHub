@@ -291,17 +291,20 @@
                                     </div>
                                 </form>
 
-                                <!-- Comments list -->
-                                <ul id="commentsList" class="list-unstyled mb-0" th:if="${!#lists.isEmpty(lastComment)}">
-                                    <li class="comment-item" th:each="c : ${lastComment}">
-                                        <div class="comment-avatar">C</div>
-                                        <div class="comment-content">
-                                            <div th:text="${c.content}">Nội dung bình luận</div>
-                                            <small th:text="${#temporals.format(c.createAt, 'dd/MM/yyyy hh:mm:ss')}">Thời gian</small>
-                                        </div>
-                                    </li>
-                                </ul>
-                                <div id="commentsEmpty" class="text-muted text-center" th:if="${#lists.isEmpty(lastComment)}">Chưa có bình luận. Hãy là người đầu tiên!</div>
+                                <!-- Scrollable Comments container -->
+                                <div class="comments-scroll">
+                                    <!-- Comments list -->
+                                    <ul id="commentsList" class="list-unstyled mb-0" th:if="${!#lists.isEmpty(lastComment)}">
+                                        <li class="comment-item" th:each="c : ${lastComment}">
+                                            <div class="comment-avatar">C</div>
+                                            <div class="comment-content">
+                                                <div th:text="${c.content}">Nội dung bình luận</div>
+                                                <small th:text="${#temporals.format(c.createAt, 'dd/MM/yyyy hh:mm:ss')}">Thời gian</small>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <div id="commentsEmpty" class="text-muted text-center" th:if="${#lists.isEmpty(lastComment)}">Chưa có bình luận. Hãy là người đầu tiên!</div>
+                                </div>
                             </div>
                         </div>
 

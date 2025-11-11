@@ -8,6 +8,9 @@ import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,13 +56,9 @@ public class UserService {
         }
     }
 
-    public Set<User> searchUsers(String keyword){
-        Set<User> result = new java.util.HashSet<>();
-        List<User> byFullName = userRepo.findByFullnameContainingIgnoreCase(keyword);
-        List<User> byUsername = userRepo.findByUsernameContainingIgnoreCase(keyword);
-        result.addAll(byFullName);
-        result.addAll(byUsername);
-        return result;
+    public Page<User> searchUsers(String keyword, int page) {
+        Pageable pageRequest = PageRequest.of(page , 3);
+        return userRepo.searchByFullnameOrUsername(keyword, pageRequest);
     }
 
     public User findByUsernameWithAllData(String username) {

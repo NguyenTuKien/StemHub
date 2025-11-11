@@ -33,7 +33,7 @@
                         <input type="text"
                                class="form-control search-input"
                                name="keyword"
-                               th:value="${param.keyword}"
+                               th:value="${keyword}"
                                placeholder="Nhập từ khóa tìm kiếm..."
                                id="searchInput">
                         <button class="btn btn-warning search-btn" type="submit">
@@ -47,9 +47,54 @@
 
     <!-- Main Content -->
     <div class="container">
-        <div class="row g-4 g-lg-5 align-items-start">
+        <div class="row g-4 g-lg-5 align-items-start"
+             th:with="docCurrent=${documents != null ? documents.number + 1 : 1}, userCurrent=${users != null ? users.number + 1 : 1}">
             <!-- Sidebar -->
             <div class="col-lg-3 mb-4">
+                <!-- Users Section -->
+                <div class="sidebar-card users-card">
+                    <div class="sidebar-card-header">
+                        <i class="fas fa-users me-2"></i>Người dùng
+                    </div>
+                    <div class="sidebar-card-body">
+                        <th:block th:if="${users != null and users.totalElements > 0}">
+                            <a class="user-item" th:each="user : ${users.content}"
+                               th:href="@{/user/profile(userId=${user.userId})}"
+                               th:aria-label="'Xem hồ sơ ' + ${user.fullname}">
+                                <div class="item-info">
+                                    <h6 class="mb-1" th:text="${user.fullname}">Full Name</h6>
+                                    <small class="text-muted">@<span th:text="${user.username}">username</span></small>
+                                    <small class="d-block text-muted mt-1"><span th:text="${user.role}">Role</span></small>
+                                </div>
+                            </a>
+                        </th:block>
+                        <div class="empty-sidebar text-center" th:if="${users == null or users.totalElements == 0}">
+                            <i class="fas fa-users fa-2x mb-3"></i>
+                            <p>Không tìm thấy người dùng phù hợp</p>
+                        </div>
+                    </div>
+                    <!-- Users pagination -->
+                    <nav class="px-3 pb-3" th:if="${users != null and users.totalPages > 1}" aria-label="Phân trang người dùng">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            <li class="page-item" th:classappend="${users.number == 0} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/search(keyword=${keyword}, userPage=${userCurrent - 1}, documentPage=${docCurrent})}"
+                                   aria-label="Trước">&laquo;</a>
+                            </li>
+                            <li class="page-item" th:each="p : ${#numbers.sequence(1, users.totalPages)}"
+                                th:classappend="${p == userCurrent} ? 'active'">
+                                <a class="page-link"
+                                   th:href="@{/search(keyword=${keyword}, userPage=${p}, documentPage=${docCurrent})}"
+                                   th:text="${p}">1</a>
+                            </li>
+                            <li class="page-item" th:classappend="${users.number + 1 == users.totalPages} ? 'disabled'">
+                                <a class="page-link"
+                                   th:href="@{/search(keyword=${keyword}, userPage=${userCurrent + 1}, documentPage=${docCurrent})}"
+                                   aria-label="Sau">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
                 <!-- Courses Section -->
                 <div class="sidebar-card courses-card mb-4">
                     <div class="sidebar-card-header">
@@ -58,7 +103,7 @@
                     <div class="sidebar-card-body courses-scroll">
                         <th:block th:if="${courses != null and !courses.isEmpty()}">
                             <a class="course-item" th:each="course : ${courses}"
-                               th:href="@{/search(keyword=${course.courseName})}"
+                               th:href="@{/search(keyword=${course.courseName}, userPage=1, documentPage=1)}"
                                th:aria-label="'Tìm tài liệu khóa học ' + ${course.courseName}">
                                 <div class="item-info">
                                     <h6 class="mb-1" th:text="${course.courseName}">Course Title</h6>
@@ -72,30 +117,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Users Section -->
-                <div class="sidebar-card users-card">
-                    <div class="sidebar-card-header">
-                        <i class="fas fa-users me-2"></i>Người dùng
-                    </div>
-                    <div class="sidebar-card-body users-scroll">
-                        <th:block th:if="${users != null and !users.isEmpty()}">
-                            <a class="user-item" th:each="user : ${users}"
-                               th:href="@{/user/profile(userId=${user.userId})}"
-                               th:aria-label="'Xem hồ sơ ' + ${user.fullname}">
-                                <div class="item-info">
-                                    <h6 class="mb-1" th:text="${user.fullname}">Full Name</h6>
-                                    <small class="text-muted">@<span th:text="${user.username}">username</span></small>
-                                    <small class="d-block text-muted mt-1"><span th:text="${user.role}">Role</span></small>
-                                </div>
-                            </a>
-                        </th:block>
-                        <div class="empty-sidebar text-center" th:if="${users == null or users.isEmpty()}">
-                            <i class="fas fa-users fa-2x mb-3"></i>
-                            <p>Không tìm thấy người dùng phù hợp</p>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <!-- Main Content -->
@@ -105,57 +126,80 @@
                     <div class="results-header">
                         <div class="row align-items-center">
                             <div class="col-12">
-                                <h3>Kết quả cho "<span th:text="${param.keyword != null ? param.keyword[0] : 'Tất cả tài liệu'}">keyword</span>"</h3>
+                                <h3>Kết quả cho "<span th:text="${keyword != null ? keyword : 'Tất cả tài liệu'}">keyword</span>"</h3>
                                 <p class="text-muted mb-0">
-                                        <span th:if="${documents != null and !documents.isEmpty()}">
-                                            Tìm thấy <span th:text="${#lists.size(documents)}">0</span> tài liệu
-                                        </span>
-                                    <span th:if="${documents == null or documents.isEmpty()}">
-                                            Không tìm thấy tài liệu nào
-                                        </span>
+                                    <span th:if="${documents != null and documents.totalElements > 0}">
+                                        Tìm thấy <span th:text="${documents.totalElements}">0</span> tài liệu
+                                    </span>
+                                    <span th:if="${documents == null or documents.totalElements == 0}">
+                                        Không tìm thấy tài liệu nào
+                                    </span>
                                 </p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Documents Grid -->
-                    <th:block th:if="${documents != null and !documents.isEmpty()}">
-                        <div class="documents-scroll">
-                            <div class="document-grid">
-                                <div class="file-card" th:each="document : ${documents}">
-                                    <div class="file-thumbnail">
-                                        <img th:src="${document.thumbnailUrl != null ? document.thumbnailUrl : '/images/default.webp'}" th:alt="${document.title}">
-                                        <div class="file-overlay">
-                                            <a th:href="@{/document/detail/{id}(id=${document.documentId})}" class="btn btn-light btn-sm">
-                                                <i class="fas fa-eye me-1"></i>Xem chi tiết
-                                            </a>
-                                        </div>
+                    <th:block th:if="${documents != null and documents.totalElements > 0}">
+                        <div class="document-grid">
+                            <div class="file-card" th:each="document : ${documents.content}">
+                                <div class="file-thumbnail">
+                                    <img th:src="${document.thumbnailUrl != null ? document.thumbnailUrl : '/images/default.webp'}" th:alt="${document.title}">
+                                    <div class="file-overlay">
+                                        <a th:href="@{/document/detail/{id}(id=${document.documentId})}" class="btn btn-light btn-sm">
+                                            <i class="fas fa-eye me-1"></i>Xem chi tiết
+                                        </a>
                                     </div>
-                                    <div class="file-info">
-                                        <h5 class="file-title">
-                                            <a th:href="@{/document/detail/{id}(id=${document.documentId})}" th:text="${document.title}">Document Title</a>
-                                        </h5>
-                                        <p class="file-description" th:text="${document.description != null ? #strings.abbreviate(document.description, 100) : 'Không có mô tả'}">Description</p>
-                                        <div class="file-meta">
-                                            <span class="category-badge" th:text="${document.category != null ? document.category : 'Chung'}">Category</span>
-                                            <span class="author"><i class="fas fa-user me-1"></i><span th:text="${document.authorName != null ? document.authorName : 'Anonymous'}">Author</span></span>
-                                        </div>
-                                        <div class="file-stats">
-                                            <span class="downloads"><i class="fas fa-download me-1"></i><span th:text="${document.downloadCount != null ? document.downloadCount : 0}">0</span></span>
-                                            <span class="favorites"><i class="fas fa-heart text-danger me-1"></i><span th:text="${document.favoriteCount != null ? document.favoriteCount : 0}">0</span></span>
-                                        </div>
+                                </div>
+                                <div class="file-info">
+                                    <h5 class="file-title">
+                                        <a th:href="@{/document/detail/{id}(id=${document.documentId})}" th:text="${document.title}">Document Title</a>
+                                    </h5>
+                                    <p class="file-description" th:text="${document.description != null ? #strings.abbreviate(document.description, 100) : 'Không có mô tả'}">Description</p>
+                                    <div class="file-meta">
+                                        <span class="category-badge" th:text="${document.category != null ? document.category : 'Chung'}">Category</span>
+                                        <span class="author"><i class="fas fa-user me-1"></i><span th:text="${document.authorName != null ? document.authorName : 'Anonymous'}">Author</span></span>
+                                    </div>
+                                    <div class="file-stats">
+                                        <span class="downloads"><i class="fas fa-download me-1"></i><span th:text="${document.downloadCount != null ? document.downloadCount : 0}">0</span></span>
+                                        <span class="favorites"><i class="fas fa-heart text-danger me-1"></i><span th:text="${document.favoriteCount != null ? document.favoriteCount : 0}">0</span></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- Documents pagination -->
+                        <nav class="mt-4" th:if="${documents.totalPages > 1}" aria-label="Phân trang tài liệu">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item" th:classappend="${documents.number == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${docCurrent - 1})}"
+                                       aria-label="Trang trước">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="p : ${#numbers.sequence(1, documents.totalPages)}"
+                                    th:classappend="${p == docCurrent} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${p})}"
+                                       th:text="${p}">1</a>
+                                </li>
+                                <li class="page-item" th:classappend="${documents.number + 1 == documents.totalPages} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${docCurrent + 1})}"
+                                       aria-label="Trang sau">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </th:block>
 
                     <!-- No Results -->
-                    <div class="no-results" th:if="${documents == null or documents.isEmpty()}">
+                    <div class="no-results" th:if="${documents == null or documents.totalElements == 0}">
                         <i class="fas fa-search"></i>
                         <h4>Không tìm thấy tài liệu</h4>
-                        <p th:if="${param.keyword != null}">Không có tài liệu nào phù hợp với tìm kiếm "<span th:text="${param.keyword[0]}">keyword</span>"</p>
-                        <p th:if="${param.keyword == null}">Không có tài liệu nào</p>
+                        <p th:if="${keyword != null}">Không có tài liệu nào phù hợp với tìm kiếm "<span th:text="${keyword}">keyword</span>"</p>
+                        <p th:if="${keyword == null}">Không có tài liệu nào</p>
                         <a href="/" class="btn btn-primary">
                             <i class="fas fa-home me-2"></i>Về trang chủ
                         </a>

@@ -52,8 +52,15 @@
         <div class="container">
             <h2 class="h4 mb-3"><i class="fas fa-file-alt me-2"></i>Tài liệu đã tải lên</h2>
 
-            <div th:if="${documents != null and !#lists.isEmpty(documents)}" class="row g-3">
-                <div class="col-12 col-sm-6 col-lg-4" th:each="doc : ${documents}">
+            <!-- Pagination summary -->
+            <div class="mb-2 text-muted small" th:if="${documents != null and documents.totalElements > 0}" th:with="current=${documents.number + 1}, total=${documents.totalPages}">
+                Trang <strong th:text="${current}">1</strong>/<span th:text="${total}">1</span>
+                • Tổng <strong th:text="${documents.totalElements}">0</strong> tài liệu
+            </div>
+
+            <!-- Use Page API: documents.totalElements and documents.content -->
+            <div th:if="${documents != null and documents.totalElements > 0}" class="row g-3">
+                <div class="col-12 col-sm-6 col-lg-4" th:each="doc : ${documents.content}">
                     <div class="card h-100 shadow-sm">
                         <a class="text-decoration-none" th:href="@{/document/detail/{id}(id=${doc.documentId})}">
                             <img class="card-img-top" th:src="${doc.thumbnailUrl != null ? doc.thumbnailUrl : '/images/default.webp'}" th:alt="${doc.title}" loading="lazy">
@@ -74,8 +81,8 @@
                                        th:attr="data-document-id=${doc.documentId},data-file-url=${doc.fileUrl}">
                                         <i class="fas fa-download me-1"></i>Tải xuống
                                     </a>
-                    <button class="btn btn-sm btn-outline-danger like-btn"
-                        th:attr="data-document-id=${doc.documentId},data-user-id=${user.userId},data-liked=${false}">
+                                    <button class="btn btn-sm btn-outline-danger like-btn"
+                                            th:attr="data-document-id=${doc.documentId},data-user-id=${user.userId},data-liked=${false}">
                                         <i class="me-1 like-icon far fa-heart"></i>
                                         <span class="like-label">Yêu thích</span>
                                     </button>
@@ -86,7 +93,8 @@
                 </div>
             </div>
 
-            <div th:if="${documents == null or #lists.isEmpty(documents)}" class="text-center py-5">
+            <!-- Empty state when no uploads -->
+            <div th:if="${documents == null or documents.totalElements == 0}" class="text-center py-5">
                 <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted">Chưa có tài liệu nào</h5>
                 <p class="text-muted mb-3">Người dùng chưa tải lên tài liệu nào.</p>
@@ -94,6 +102,21 @@
                     <i class="fas fa-plus me-2"></i>Tải lên tài liệu đầu tiên
                 </a>
             </div>
+
+            <!-- Pagination -->
+            <nav class="mt-4" th:if="${documents != null and documents.totalPages > 1}" th:with="current=${documents.number + 1}, total=${documents.totalPages}" aria-label="Phân trang tài liệu đã tải">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${current == 1} ? 'disabled'" th:attr="aria-disabled=${current == 1}">
+                        <a class="page-link" th:href="@{/user/profile(userId=${user.userId}, page=${current - 1})}" aria-label="Trang trước" th:attr="tabindex=${current == 1}? -1 : 0">&laquo;</a>
+                    </li>
+                    <li class="page-item" th:each="p : ${#numbers.sequence(1, total)}" th:classappend="${p == current} ? 'active'" th:attr="aria-current=${p == current}? 'page' : null">
+                        <a class="page-link" th:href="@{/user/profile(userId=${user.userId}, page=${p})}" th:text="${p}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${current == total} ? 'disabled'" th:attr="aria-disabled=${current == total}">
+                        <a class="page-link" th:href="@{/user/profile(userId=${user.userId}, page=${current + 1})}" aria-label="Trang sau" th:attr="tabindex=${current == total}? -1 : 0">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </section>
 </main>

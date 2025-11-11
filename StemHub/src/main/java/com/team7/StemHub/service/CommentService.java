@@ -30,7 +30,7 @@ public class CommentService {
         return commentRepo.save(comment);
     }
 
-    public List<Comment> getLastCommentByDocumentId(UUID documentId) {
-        return commentRepo.findFirst5ByDocumentIdOrderByCreateAtDesc(documentId);
+    public List<Comment> getAllCommentByDocumentId(UUID documentId) {
+        return commentRepo.findAllByDocumentIdOrderByCreateAtDesc(documentId);
     }
 }

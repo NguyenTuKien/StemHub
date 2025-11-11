@@ -86,7 +86,7 @@
                                     </div>
                                     <div class="featured-card-badge">
                                         <span class="badge bg-warning">
-                                            <ii class="fas fa-star me-1"></ii>Nổi bật
+                                            <i class="fas fa-star me-1"></i>Nổi bật
                                         </span>
                                     </div>
                                 </div>
@@ -136,8 +136,8 @@
                         <h2 class="section-title text-start">
                             <i class="fas fa-clock me-2"></i>Tài liệu mới nhất
                         </h2>
-                        <div class="newest-documents-container">
-                            <article class="recent-item" th:each="doc : ${newestDocuments}">
+                        <div class="newest-documents-container" th:if="${newestDocumentsPage != null and !#lists.isEmpty(newestDocumentsPage.content)}">
+                            <article class="recent-item" th:each="doc : ${newestDocumentsPage.content}">
                                 <a th:href="@{/document/detail/{id}(id=${doc.documentId})}" class="text-decoration-none d-flex align-items-center gap-3 w-100">
                                     <div class="recent-item-image">
                                         <!-- Use thumbnailUrl if available, otherwise default image -->
@@ -169,7 +169,7 @@
                         </div>
 
                         <!-- Empty state if no documents -->
-                        <div th:if="${newestDocuments == null or #lists.isEmpty(newestDocuments)}" class="empty-state text-center py-5">
+                        <div th:if="${newestDocumentsPage == null or #lists.isEmpty(newestDocumentsPage.content)}" class="empty-state text-center py-5">
                             <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
                             <h5 class="text-muted">Chưa có tài liệu nào</h5>
                             <p class="text-muted mb-3">Hãy là người đầu tiên tải lên tài liệu!</p>
@@ -177,6 +177,38 @@
                                 <i class="fas fa-plus me-2"></i>Tải lên tài liệu
                             </a>
                         </div>
+
+                        <!-- Pagination compatible with home and category -->
+                        <nav class="mt-4" aria-label="Phân trang tài liệu" th:if="${newestDocumentsPage != null and newestDocumentsPage.totalPages > 1}">
+                            <ul class="pagination justify-content-center">
+                                <!-- Prev -->
+                                <li class="page-item" th:classappend="${newestDocumentsPage.number == 0} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="${category != null} ? @{/category(category=${category}, page=${newestDocumentsPage.number})} : @{/(page=${newestDocumentsPage.number})}"
+                                       aria-label="Trang trước">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+
+                                <!-- Page numbers -->
+                                <li class="page-item"
+                                    th:each="p : ${#numbers.sequence(1, newestDocumentsPage.totalPages)}"
+                                    th:classappend="${p == newestDocumentsPage.number + 1} ? 'active'">
+                                    <a class="page-link"
+                                       th:href="${category != null} ? @{/category(category=${category}, page=${p})} : @{/(page=${p})}"
+                                       th:text="${p}">1</a>
+                                </li>
+
+                                <!-- Next -->
+                                <li class="page-item" th:classappend="${newestDocumentsPage.number + 1 == newestDocumentsPage.totalPages} ? 'disabled'">
+                                    <a class="page-link"
+                                       th:href="${category != null} ? @{/category(category=${category}, page=${newestDocumentsPage.number + 2})} : @{/(page=${newestDocumentsPage.number + 2})}"
+                                       aria-label="Trang sau">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
 
                     <div class="col-lg-4">
