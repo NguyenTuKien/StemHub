@@ -24,7 +24,7 @@ public interface DocumentRepo extends JpaRepository<Document, UUID> {
     Optional<Document> findById(UUID id);
 
     @EntityGraph(attributePaths = { "author", "course" })
-    Page<Document> findAllByOrderByCreateAtDesc(Pageable pageable);
+    Page<Document> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     @EntityGraph(attributePaths = { "author", "course" })
     List<Document> findTop5ByOrderByDownloadCountDesc();
@@ -36,7 +36,7 @@ public interface DocumentRepo extends JpaRepository<Document, UUID> {
     List<Document> findByCourse(Course course);
 
     @EntityGraph(attributePaths = { "author", "course" })
-    Page<Document> findAllByAuthorOrderByCreateAtDesc(User user, Pageable pageable);
+    Page<Document> findAllByAuthorOrderByCreatedAtDesc(User user, Pageable pageable);
 
     @Query("SELECT d FROM Document d JOIN d.course c WHERE " +
             "LOWER(d.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
@@ -50,5 +50,5 @@ public interface DocumentRepo extends JpaRepository<Document, UUID> {
     List<Document> findTop15ByCategoryOrderByDownloadCountDesc(Category category);
 
     @EntityGraph(attributePaths = { "author", "course" })
-    Page<Document> findByCategoryOrderByCreateAtDesc(Category category, Pageable pageable);
+    Page<Document> findByCategoryOrderByCreatedAtDesc(Category category, Pageable pageable);
 }

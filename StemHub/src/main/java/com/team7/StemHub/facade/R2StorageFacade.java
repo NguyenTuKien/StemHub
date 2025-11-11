@@ -103,7 +103,7 @@ public class R2StorageFacade {
                     .thumbnailPath(thumbnailUrl)
                     .category(dto.getCategory())
                     .course(course)
-                    .createAt(LocalDateTime.now())
+                    .createdAt(LocalDateTime.now())
                     .build();
 
             Document savedDocument = documentService.saveDocument(document);

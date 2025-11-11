@@ -48,7 +48,7 @@ public class HomePageController {
     public String category(@RequestParam String category, Model model, @RequestParam(defaultValue = "1") int page) {
         List <DocumentResponse> topDocuments = documentService.getDocumentsByCategorySortedByDownloadCount(category).stream().map(DocumentResponse::new).toList();
         int pageIndex = (page < 1) ? 0 : page - 1;
-        Page<Document> documentPage = documentService.getDocumentsByCategorySortedByCreateAt(category, pageIndex);
+        Page<Document> documentPage = documentService.getDocumentsByCategorySortedByCreatedAt(category, pageIndex);
         Page<DocumentResponse> newestDocumentsPage = documentPage.map(DocumentResponse::new);
         List <UserResponse> topUsers = userService.getTop10UsersOrderByDocument().stream().map(UserResponse::new).toList();
         List <Category> categories = Category.getAllDisplayNames();

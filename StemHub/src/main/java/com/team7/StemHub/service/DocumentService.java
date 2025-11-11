@@ -40,7 +40,7 @@ public class DocumentService {
 
     public Page<Document> getNewestDocuments(int page) {
         Pageable pageable = PageRequest.of(page, 7);
-        return documentRepo.findAllByOrderByCreateAtDesc(pageable);
+        return documentRepo.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     public Document getDocumentById(UUID id) {
@@ -59,16 +59,16 @@ public class DocumentService {
     }
 
     public Page<Document> getAllUploadDocumentsByAuthor(User user, int page) {
-        return documentRepo.findAllByAuthorOrderByCreateAtDesc(user, PageRequest.of(page, 6));
+        return documentRepo.findAllByAuthorOrderByCreatedAtDesc(user, PageRequest.of(page, 6));
     }
 
     public List<Document> getDocumentsByCategorySortedByDownloadCount(String category) {
         return documentRepo.findTop15ByCategoryOrderByDownloadCountDesc(Category.valueOf(category));
     }
 
-    public Page<Document> getDocumentsByCategorySortedByCreateAt(String category, int page){
+    public Page<Document> getDocumentsByCategorySortedByCreatedAt(String category, int page){
         Pageable pageable = PageRequest.of(page, 7);
-        return documentRepo.findByCategoryOrderByCreateAtDesc(Category.valueOf(category), pageable);
+        return documentRepo.findByCategoryOrderByCreatedAtDesc(Category.valueOf(category), pageable);
     }
 
     public Page<Document> searchDocuments(String keyword, int page) {
