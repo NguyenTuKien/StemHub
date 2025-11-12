@@ -317,15 +317,15 @@
                                 Tài liệu liên quan
                             </div>
                             <div class="sidebar-card-body">
-                                <ul class="list-group list-group-flush" th:if="${!#lists.isEmpty(relativeDocument)}">
-                                    <li class="list-group-item px-0" th:each="doc : ${relativeDocument}">
+                                <ul class="list-group list-group-flush" th:if="${!#lists.isEmpty(relatedDocument)}">
+                                    <li class="list-group-item px-0" th:each="doc : ${relatedDocument}">
                                         <a class="d-flex align-items-start text-decoration-none" th:href="@{/document/detail/{id}(id=${doc.documentId})}">
                                             <i class="fas fa-file-alt text-secondary me-2 mt-1"></i>
                                             <span class="text-truncate d-inline-block" style="max-width: 260px;" th:text="${doc.title}">Tên tài liệu</span>
                                         </a>
                                     </li>
                                 </ul>
-                                <p class="text-muted text-center mb-0" th:if="${#lists.isEmpty(relativeDocument)}">Chưa có tài liệu liên quan</p>
+                                <p class="text-muted text-center mb-0" th:if="${#lists.isEmpty(relatedDocument)}">Chưa có tài liệu liên quan</p>
                             </div>
                         </div>
                     </div>

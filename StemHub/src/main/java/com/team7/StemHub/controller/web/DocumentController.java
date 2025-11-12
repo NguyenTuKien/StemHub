@@ -111,7 +111,7 @@ public class DocumentController {
     public String viewDocumentDetail(@PathVariable UUID documentId, Model model) {
         Document document = documentService.getDocumentById(documentId);
         Long countFavorites = documentService.countFavorites(documentId);
-        List<Document> relativeDocument = documentService.getDocumentsByCourse(document.getCourse());
+        List<Document> relatedDocument = documentService.getRelatedDocument(document);
         List<Comment> lastComment = commentService.getAllCommentByDocumentId(documentId);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UUID currentUserId = null;
@@ -133,10 +133,10 @@ public class DocumentController {
             }
         }
         DocumentResponse documentDTO = new DocumentResponse(document, countFavorites);
-        List <DocumentResponse> relativeDocumentDTO = relativeDocument.stream().map(DocumentResponse::new).toList();
+        List <DocumentResponse> relatedDocumentDTO = relatedDocument.stream().map(DocumentResponse::new).toList();
         List < CommentResponse> lastCommentDTO = lastComment.stream().map(CommentResponse::new).toList();
         model.addAttribute("document", documentDTO);
-        model.addAttribute("relativeDocument", relativeDocumentDTO);
+        model.addAttribute("relatedDocument", relatedDocumentDTO);
         model.addAttribute("lastComment", lastCommentDTO);
         model.addAttribute("currentUserId", currentUserId); // legacy support
         model.addAttribute("liked", liked);

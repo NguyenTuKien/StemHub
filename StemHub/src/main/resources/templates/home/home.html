@@ -180,32 +180,41 @@
 
                         <!-- Pagination compatible with home and category -->
                         <nav class="mt-4" aria-label="Phân trang tài liệu" th:if="${newestDocumentsPage != null and newestDocumentsPage.totalPages > 1}">
-                            <ul class="pagination justify-content-center">
-                                <!-- Prev -->
-                                <li class="page-item" th:classappend="${newestDocumentsPage.number == 0} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="${category != null} ? @{/category(category=${category}, page=${newestDocumentsPage.number})} : @{/(page=${newestDocumentsPage.number})}"
-                                       aria-label="Trang trước">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
+                            <ul class="pagination justify-content-center"
+                                th:with="
+                                    current=${newestDocumentsPage.number + 1},
+                                    total=${newestDocumentsPage.totalPages},
+                                    start=${T(java.lang.Math).max(1, T(java.lang.Math).min(current - 1, total - 2))},
+                                    end=${T(java.lang.Math).min(total, start + 2)}
+                                ">
+                                <!-- First -->
+                                <li class="page-item" th:classappend="${newestDocumentsPage.number == 0} ? ' disabled'">
+                                    <a class="page-link" th:if="${category == null}" th:href="@{/(page=1)}" aria-label="Trang đầu"><span aria-hidden="true">&laquo;&laquo;</span></a>
+                                    <a class="page-link" th:if="${category != null}" th:href="@{/category(category=${category}, page=1)}" aria-label="Trang đầu"><span aria-hidden="true">&laquo;&laquo;</span></a>
                                 </li>
 
-                                <!-- Page numbers -->
-                                <li class="page-item"
-                                    th:each="p : ${#numbers.sequence(1, newestDocumentsPage.totalPages)}"
-                                    th:classappend="${p == newestDocumentsPage.number + 1} ? 'active'">
-                                    <a class="page-link"
-                                       th:href="${category != null} ? @{/category(category=${category}, page=${p})} : @{/(page=${p})}"
-                                       th:text="${p}">1</a>
+                                <!-- Prev -->
+                                <li class="page-item" th:classappend="${newestDocumentsPage.number == 0} ? ' disabled'">
+                                    <a class="page-link" th:if="${category == null}" th:href="@{/(page=${newestDocumentsPage.number})}" aria-label="Trang trước"><span aria-hidden="true">&laquo;</span></a>
+                                    <a class="page-link" th:if="${category != null}" th:href="@{/category(category=${category}, page=${newestDocumentsPage.number})}" aria-label="Trang trước"><span aria-hidden="true">&laquo;</span></a>
+                                </li>
+
+                                <!-- Page numbers (max 3 near current) -->
+                                <li class="page-item" th:each="p : ${#numbers.sequence(start, end)}" th:classappend="${p == current} ? ' active'">
+                                    <a class="page-link" th:if="${category == null}" th:href="@{/(page=${p})}" th:text="${p}">1</a>
+                                    <a class="page-link" th:if="${category != null}" th:href="@{/category(category=${category}, page=${p})}" th:text="${p}">1</a>
                                 </li>
 
                                 <!-- Next -->
-                                <li class="page-item" th:classappend="${newestDocumentsPage.number + 1 == newestDocumentsPage.totalPages} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="${category != null} ? @{/category(category=${category}, page=${newestDocumentsPage.number + 2})} : @{/(page=${newestDocumentsPage.number + 2})}"
-                                       aria-label="Trang sau">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
+                                <li class="page-item" th:classappend="${current == total} ? ' disabled'">
+                                    <a class="page-link" th:if="${category == null}" th:href="@{/(page=${newestDocumentsPage.number + 2})}" aria-label="Trang sau"><span aria-hidden="true">&raquo;</span></a>
+                                    <a class="page-link" th:if="${category != null}" th:href="@{/category(category=${category}, page=${newestDocumentsPage.number + 2})}" aria-label="Trang sau"><span aria-hidden="true">&raquo;</span></a>
+                                </li>
+
+                                <!-- Last -->
+                                <li class="page-item" th:classappend="${current == total} ? ' disabled'">
+                                    <a class="page-link" th:if="${category == null}" th:href="@{/(page=${total})}" aria-label="Trang cuối"><span aria-hidden="true">&raquo;&raquo;</span></a>
+                                    <a class="page-link" th:if="${category != null}" th:href="@{/category(category=${category}, page=${total})}" aria-label="Trang cuối"><span aria-hidden="true">&raquo;&raquo;</span></a>
                                 </li>
                             </ul>
                         </nav>

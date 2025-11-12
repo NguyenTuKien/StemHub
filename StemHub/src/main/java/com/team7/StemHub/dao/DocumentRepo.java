@@ -51,4 +51,7 @@ public interface DocumentRepo extends JpaRepository<Document, UUID> {
 
     @EntityGraph(attributePaths = { "author", "course" })
     Page<Document> findByCategoryOrderByCreatedAtDesc(Category category, Pageable pageable);
+
+    @EntityGraph(attributePaths = { "author", "course" })
+    List<Document> findTop10ByCourseAndCategoryAndIdNotOrderByDownloadCountDesc(Course course, Category category, UUID id);
 }

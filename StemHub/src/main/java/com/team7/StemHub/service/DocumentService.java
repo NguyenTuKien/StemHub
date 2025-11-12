@@ -48,6 +48,14 @@ public class DocumentService {
                 .orElseThrow(() -> new RuntimeException("Document not found"));
     }
 
+    public List<Document> getRelatedDocument(Document currentDocument) {
+        return documentRepo.findTop10ByCourseAndCategoryAndIdNotOrderByDownloadCountDesc(
+                currentDocument.getCourse(),
+                currentDocument.getCategory(),
+                currentDocument.getId()
+        );
+    }
+
     public List<Document> getDocumentsByCourse(Course course) {
         return documentRepo.findByCourse(course);
     }

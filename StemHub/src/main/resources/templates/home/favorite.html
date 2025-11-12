@@ -138,16 +138,31 @@
                 </div>
 
                 <!-- Pagination controls (only when Page is provided) -->
-                <nav class="mt-4" th:if="${hasPage and total > 1}" aria-label="Phân trang tài liệu yêu thích">
+                <nav class="mt-4" th:if="${hasPage and total > 1}" aria-label="Phân trang tài liệu yêu thích"
+                     th:with="
+                        start=${T(java.lang.Math).max(1, T(java.lang.Math).min(current - 1, total - 2))},
+                        end=${T(java.lang.Math).min(total, start + 2)}
+                     ">
                     <ul class="pagination justify-content-center">
-                        <li class="page-item" th:classappend="${current == 1} ? 'disabled'" th:attr="aria-disabled=${current == 1}">
+                        <!-- First -->
+                        <li class="page-item" th:classappend="${current == 1} ? ' disabled'" th:attr="aria-disabled=${current == 1}">
+                            <a class="page-link" th:href="@{/user/favorites(page=1)}" aria-label="Trang đầu" th:attr="tabindex=${current == 1}? -1 : 0">&laquo;&laquo;</a>
+                        </li>
+                        <!-- Prev -->
+                        <li class="page-item" th:classappend="${current == 1} ? ' disabled'" th:attr="aria-disabled=${current == 1}">
                             <a class="page-link" th:href="@{/user/favorites(page=${current - 1})}" aria-label="Trang trước" th:attr="tabindex=${current == 1}? -1 : 0">&laquo;</a>
                         </li>
-                        <li class="page-item" th:each="p : ${#numbers.sequence(1, total)}" th:classappend="${p == current} ? 'active'" th:attr="aria-current=${p == current}? 'page' : null">
+                        <!-- Page numbers (max 3) -->
+                        <li class="page-item" th:each="p : ${#numbers.sequence(start, end)}" th:classappend="${p == current} ? ' active'" th:attr="aria-current=${p == current}? 'page' : null">
                             <a class="page-link" th:href="@{/user/favorites(page=${p})}" th:text="${p}">1</a>
                         </li>
-                        <li class="page-item" th:classappend="${current == total} ? 'disabled'" th:attr="aria-disabled=${current == total}">
+                        <!-- Next -->
+                        <li class="page-item" th:classappend="${current == total} ? ' disabled'" th:attr="aria-disabled=${current == total}">
                             <a class="page-link" th:href="@{/user/favorites(page=${current + 1})}" aria-label="Trang sau" th:attr="tabindex=${current == total}? -1 : 0">&raquo;</a>
+                        </li>
+                        <!-- Last -->
+                        <li class="page-item" th:classappend="${current == total} ? ' disabled'" th:attr="aria-disabled=${current == total}">
+                            <a class="page-link" th:href="@{/user/favorites(page=${total})}" aria-label="Trang cuối" th:attr="tabindex=${current == total}? -1 : 0">&raquo;&raquo;</a>
                         </li>
                     </ul>
                 </nav>

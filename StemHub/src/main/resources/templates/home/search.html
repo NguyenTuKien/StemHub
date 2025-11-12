@@ -75,22 +75,32 @@
                     </div>
                     <!-- Users pagination -->
                     <nav class="px-3 pb-3" th:if="${users != null and users.totalPages > 1}" aria-label="Phân trang người dùng">
-                        <ul class="pagination pagination-sm justify-content-center mb-0">
-                            <li class="page-item" th:classappend="${users.number == 0} ? 'disabled'">
-                                <a class="page-link"
-                                   th:href="@{/search(keyword=${keyword}, userPage=${userCurrent - 1}, documentPage=${docCurrent})}"
-                                   aria-label="Trước">&laquo;</a>
+                        <ul class="pagination pagination-sm justify-content-center mb-0"
+                            th:with="
+                                uCurrent=${users.number + 1},
+                                uTotal=${users.totalPages},
+                                uStart=${T(java.lang.Math).max(1, T(java.lang.Math).min(uCurrent - 1, uTotal - 2))},
+                                uEnd=${T(java.lang.Math).min(uTotal, uStart + 2)}
+                            ">
+                            <!-- First -->
+                            <li class="page-item" th:classappend="${uCurrent == 1} ? ' disabled'">
+                                <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=1, documentPage=${docCurrent})}" aria-label="Đầu">&laquo;&laquo;</a>
                             </li>
-                            <li class="page-item" th:each="p : ${#numbers.sequence(1, users.totalPages)}"
-                                th:classappend="${p == userCurrent} ? 'active'">
-                                <a class="page-link"
-                                   th:href="@{/search(keyword=${keyword}, userPage=${p}, documentPage=${docCurrent})}"
-                                   th:text="${p}">1</a>
+                            <!-- Prev -->
+                            <li class="page-item" th:classappend="${uCurrent == 1} ? ' disabled'">
+                                <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${uCurrent - 1}, documentPage=${docCurrent})}" aria-label="Trước">&laquo;</a>
                             </li>
-                            <li class="page-item" th:classappend="${users.number + 1 == users.totalPages} ? 'disabled'">
-                                <a class="page-link"
-                                   th:href="@{/search(keyword=${keyword}, userPage=${userCurrent + 1}, documentPage=${docCurrent})}"
-                                   aria-label="Sau">&raquo;</a>
+                            <!-- Page numbers (max 3) -->
+                            <li class="page-item" th:each="p : ${#numbers.sequence(uStart, uEnd)}" th:classappend="${p == uCurrent} ? ' active'">
+                                <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${p}, documentPage=${docCurrent})}" th:text="${p}">1</a>
+                            </li>
+                            <!-- Next -->
+                            <li class="page-item" th:classappend="${uCurrent == uTotal} ? ' disabled'">
+                                <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${uCurrent + 1}, documentPage=${docCurrent})}" aria-label="Sau">&raquo;</a>
+                            </li>
+                            <!-- Last -->
+                            <li class="page-item" th:classappend="${uCurrent == uTotal} ? ' disabled'">
+                                <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${uTotal}, documentPage=${docCurrent})}" aria-label="Cuối">&raquo;&raquo;</a>
                             </li>
                         </ul>
                     </nav>
@@ -169,26 +179,32 @@
                         </div>
                         <!-- Documents pagination -->
                         <nav class="mt-4" th:if="${documents.totalPages > 1}" aria-label="Phân trang tài liệu">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item" th:classappend="${documents.number == 0} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${docCurrent - 1})}"
-                                       aria-label="Trang trước">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
+                            <ul class="pagination justify-content-center"
+                                th:with="
+                                    dCurrent=${documents.number + 1},
+                                    dTotal=${documents.totalPages},
+                                    dStart=${T(java.lang.Math).max(1, T(java.lang.Math).min(dCurrent - 1, dTotal - 2))},
+                                    dEnd=${T(java.lang.Math).min(dTotal, dStart + 2)}
+                                ">
+                                <!-- First -->
+                                <li class="page-item" th:classappend="${dCurrent == 1} ? ' disabled'">
+                                    <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=1)}" aria-label="Đầu">&laquo;&laquo;</a>
                                 </li>
-                                <li class="page-item" th:each="p : ${#numbers.sequence(1, documents.totalPages)}"
-                                    th:classappend="${p == docCurrent} ? 'active'">
-                                    <a class="page-link"
-                                       th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${p})}"
-                                       th:text="${p}">1</a>
+                                <!-- Prev -->
+                                <li class="page-item" th:classappend="${dCurrent == 1} ? ' disabled'">
+                                    <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${dCurrent - 1})}" aria-label="Trước">&laquo;</a>
                                 </li>
-                                <li class="page-item" th:classappend="${documents.number + 1 == documents.totalPages} ? 'disabled'">
-                                    <a class="page-link"
-                                       th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${docCurrent + 1})}"
-                                       aria-label="Trang sau">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
+                                <!-- Page numbers (max 3) -->
+                                <li class="page-item" th:each="p : ${#numbers.sequence(dStart, dEnd)}" th:classappend="${p == dCurrent} ? ' active'">
+                                    <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${p})}" th:text="${p}">1</a>
+                                </li>
+                                <!-- Next -->
+                                <li class="page-item" th:classappend="${dCurrent == dTotal} ? ' disabled'">
+                                    <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${dCurrent + 1})}" aria-label="Sau">&raquo;</a>
+                                </li>
+                                <!-- Last -->
+                                <li class="page-item" th:classappend="${dCurrent == dTotal} ? ' disabled'">
+                                    <a class="page-link" th:href="@{/search(keyword=${keyword}, userPage=${userCurrent}, documentPage=${dTotal})}" aria-label="Cuối">&raquo;&raquo;</a>
                                 </li>
                             </ul>
                         </nav>
