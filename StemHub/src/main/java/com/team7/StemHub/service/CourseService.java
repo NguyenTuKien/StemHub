@@ -23,7 +23,7 @@ public class CourseService {
     }
 
     public List<Course> getAllCourses(){
-        return courseRepo.findAll();
+        return courseRepo.findAllByOrderByCourseId();
     }
 
     public Set<Course> searchCourses(String keyword){

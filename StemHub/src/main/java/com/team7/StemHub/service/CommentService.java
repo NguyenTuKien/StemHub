@@ -31,6 +31,6 @@ public class CommentService {
     }
 
     public List<Comment> getAllCommentByDocumentId(UUID documentId) {
-        return commentRepo.findAllByDocumentIdOrderByCreateAtDesc(documentId);
+        return commentRepo.findAllByDocumentIdOrderByCreatedAtDesc(documentId);
     }
 }

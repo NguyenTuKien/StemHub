@@ -299,7 +299,7 @@
                                             <div class="comment-avatar">C</div>
                                             <div class="comment-content">
                                                 <div th:text="${c.content}">Nội dung bình luận</div>
-                                                <small th:text="${#temporals.format(c.createAt, 'dd/MM/yyyy hh:mm:ss')}">Thời gian</small>
+                                                <small th:text="${#temporals.format(c.createdAt, 'dd/MM/yyyy hh:mm:ss')}">Thời gian</small>
                                             </div>
                                         </li>
                                     </ul>

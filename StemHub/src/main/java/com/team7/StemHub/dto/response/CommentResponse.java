@@ -10,12 +10,12 @@ public class CommentResponse {
     private final String username;
     private final String title;
     private final String content;
-    private final LocalDateTime createAt;
+    private final LocalDateTime createdAt;
 
     public CommentResponse(Comment comment) {
         this.username = comment.getUser().getUsername();
         this.title = comment.getDocument().getTitle();
         this.content = comment.getContent();
-        this.createAt = comment.getCreateAt();
+        this.createdAt = comment.getCreatedAt();
     }
 }
