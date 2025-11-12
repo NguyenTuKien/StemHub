@@ -21,7 +21,7 @@
         if(label) label.textContent = 'Đang xử lý...';
         try{
           const params = new URLSearchParams({ userId, documentId });
-          const res = await fetch('/like', {
+          const res = await fetch('/api/v1/actions/like', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: params.toString(),
@@ -68,7 +68,7 @@
         a.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Đang tải...';
         try{
           const params = new URLSearchParams({ documentId });
-          await fetch('/download', {
+          await fetch('/api/v1/actions/download', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: params.toString(),

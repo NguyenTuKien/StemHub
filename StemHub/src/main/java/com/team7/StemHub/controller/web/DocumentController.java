@@ -47,6 +47,7 @@ public class DocumentController {
         if (authentication != null && authentication.isAuthenticated()
                 && authentication.getPrincipal() instanceof UserDetails userDetails) {
             String username = userDetails.getUsername();
+            // Load with minimal data here (only need id)
             User user = userService.findByUsername(username);
             if (user != null) {
                 userId = user.getId();
@@ -55,8 +56,7 @@ public class DocumentController {
         List<CourseResponse> courses = courseService.getAllCourses().stream()
                 .map(CourseResponse::new)
                 .toList();
-    // Provide enum values so the form can submit the correct Category name while showing display names
-    model.addAttribute("categories", Category.values());
+        model.addAttribute("categories", Category.values());
         model.addAttribute("userId", userId);
         model.addAttribute("courses", courses);
         return "home/upload"; // => templates/home/upload.html
@@ -116,13 +116,12 @@ public class DocumentController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UUID currentUserId = null;
         boolean liked = false;
-        User currentUser = null;
         if (authentication != null && authentication.isAuthenticated()
                 && authentication.getPrincipal() instanceof UserDetails userDetails) {
-            currentUser = userService.findByUsername(userDetails.getUsername());
+            // IMPORTANT: load user with favorites to avoid lazy issues (open-in-view=false)
+            User currentUser = userService.findByUsernameWithAllData(userDetails.getUsername());
             if (currentUser != null) {
                 currentUserId = currentUser.getId();
-                // determine like state using ID comparison
                 try {
                     liked = currentUser.getFavoritesDocuments() != null &&
                             currentUser.getFavoritesDocuments().stream()
@@ -133,8 +132,8 @@ public class DocumentController {
             }
         }
         DocumentResponse documentDTO = new DocumentResponse(document, countFavorites);
-        List <DocumentResponse> relatedDocumentDTO = relatedDocument.stream().map(DocumentResponse::new).toList();
-        List < CommentResponse> lastCommentDTO = lastComment.stream().map(CommentResponse::new).toList();
+        List<DocumentResponse> relatedDocumentDTO = relatedDocument.stream().map(DocumentResponse::new).toList();
+        List<CommentResponse> lastCommentDTO = lastComment.stream().map(CommentResponse::new).toList();
         model.addAttribute("document", documentDTO);
         model.addAttribute("relatedDocument", relatedDocumentDTO);
         model.addAttribute("lastComment", lastCommentDTO);

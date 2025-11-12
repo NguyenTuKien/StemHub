@@ -3,7 +3,6 @@ package com.team7.StemHub.service;
 import com.team7.StemHub.dao.DocumentRepo;
 import com.team7.StemHub.dao.UserRepo;
 import com.team7.StemHub.exception.NotFoundException;
-import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
 import jakarta.transaction.Transactional;
@@ -43,16 +42,18 @@ public class UserService {
     }
 
     @Transactional
-    public void likeDocument(UUID userId, UUID documentId) {
+    public boolean likeDocument(UUID userId, UUID documentId) {
         User user = userRepo.findByIdWithFavorites(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        Document document = documentRepo.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found: " + documentId));
+        Document document = documentRepo.getReferenceById(documentId);
         Set<Document> favorites = user.getFavoritesDocuments();
-        if (favorites.contains(document)) {
-            favorites.remove(document);
+        boolean alreadyLiked = favorites.stream().anyMatch(d -> d.getId().equals(documentId));
+        if (alreadyLiked) {
+            favorites.removeIf(d -> d.getId().equals(documentId));
+            return false; // now unfavorited
         } else {
             favorites.add(document);
+            return true; // now favorited
         }
     }
 
