@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -41,8 +42,27 @@ public class UserController {
         int pageIndex = (page < 1) ? 0 : page - 1;
         Page<Document> documents = documentService.getAllUploadDocumentsByAuthor(user, pageIndex);
         Page<DocumentResponse> documentPage = documents.map(DocumentResponse::new);
+        // Determine current authenticated user and liked documents for initial state
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UUID currentUserId = null;
+        Set<UUID> likedIds = Set.of();
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            User currentUser = userService.findByUsernameWithAllData(userDetails.getUsername());
+            if (currentUser != null) {
+                currentUserId = currentUser.getId();
+                if (currentUser.getFavoritesDocuments() != null) {
+                    likedIds = currentUser.getFavoritesDocuments().stream()
+                            .filter(Objects::nonNull)
+                            .map(Document::getId)
+                            .collect(toSet());
+                }
+            }
+        }
         model.addAttribute("user", userResponse);
         model.addAttribute("documents", documentPage);
+        model.addAttribute("currentUserId", currentUserId);
+        model.addAttribute("likedIds", likedIds);
         return "home/profile";
     }
 
@@ -55,26 +75,29 @@ public class UserController {
             String username = userDetails.getUsername();
             currentUser = userService.findByUsernameWithAllData(username);
         }
+        if (currentUser == null) {
+            return "redirect:/auth/login";
+        }
         UserResponse userResponse = new UserResponse(currentUser);
         Set<Document> favoriteDocuments = currentUser.getFavoritesDocuments();
         List<DocumentResponse> favoriteDocumentsDTO = favoriteDocuments.stream()
                 .map(DocumentResponse::new)
-                .sorted(Comparator.comparing(DocumentResponse::getCreatedAt).reversed()) // <-- Sắp xếp (ví dụ: mới nhất)
-                .toList(); // (Bây giờ nó là List đã sắp xếp)
+                .sorted(Comparator.comparing(DocumentResponse::getCreatedAt).reversed())
+                .toList();
         int pageIndex = (page < 1) ? 0 : page - 1;
         Pageable pageRequest = PageRequest.of(pageIndex, 6);
         int start = (int) pageRequest.getOffset();
         int end = Math.min((start + pageRequest.getPageSize()), favoriteDocumentsDTO.size());
         List<DocumentResponse> pageContent;
         if (start > favoriteDocumentsDTO.size()) {
-            pageContent = List.of(); // Trả về rỗng nếu số trang quá lớn
+            pageContent = List.of();
         } else {
             pageContent = favoriteDocumentsDTO.subList(start, end);
         }
         Page<DocumentResponse> favoriteDocumentsPage = new PageImpl<>(
-                pageContent, // <-- Danh sách chỉ 3 mục
-                pageRequest, // <-- Thông tin trang
-                favoriteDocumentsDTO.size() // <-- Tổng số mục
+                pageContent,
+                pageRequest,
+                favoriteDocumentsDTO.size()
         );
         model.addAttribute("user", userResponse);
         model.addAttribute("documents", favoriteDocumentsPage);
@@ -82,4 +105,3 @@ public class UserController {
         return "home/favorite";
     }
 }
-

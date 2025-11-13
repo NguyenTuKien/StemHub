@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             if (!documentId) return;
-
             // UI: disable and show spinner (preserve label and icon)
             const iconEl = likeBtn.querySelector('i');
             const labelEl = document.getElementById('likeLabel');

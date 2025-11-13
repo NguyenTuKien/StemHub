@@ -34,7 +34,7 @@
             <div class="d-flex align-items-center justify-content-between">
                 <div>
                     <h1 class="h3 mb-1" th:text="${user != null ? (user.fullname != null ? user.fullname : user.username) : 'Người dùng'}">Người dùng</h1>
-                    <div class="text-white-50">Tham gia: <span th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">--/--/----</span></div>
+                    <div class="text-white-50">Tham gia: <span th:text="${user != null and user.createdAt != null ? #temporals.format(user.createdAt, 'dd/MM/yyyy') : 'Không xác định'}">--/--/----</span></div>
                 </div>
                 <div class="d-flex gap-2">
                     <a sec:authorize="isAuthenticated()" th:href="@{/document/upload}" class="btn btn-warning">
@@ -81,10 +81,13 @@
                                        th:attr="data-document-id=${doc.documentId},data-file-url=${doc.fileUrl}">
                                         <i class="fas fa-download me-1"></i>Tải xuống
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger like-btn"
-                                            th:attr="data-document-id=${doc.documentId},data-user-id=${user.userId},data-liked=${false}">
-                                        <i class="me-1 like-icon far fa-heart"></i>
-                                        <span class="like-label">Yêu thích</span>
+                                    <button class="btn btn-sm like-btn"
+                                            th:with="isLiked=${likedIds != null and doc.documentId != null and likedIds.contains(doc.documentId)}"
+                                            th:classappend="${isLiked} ? 'btn-danger' : 'btn-outline-danger'"
+                                            th:attr="data-document-id=${doc.documentId},data-user-id=${currentUserId},data-liked=${isLiked}">
+                                        <i class="me-1 like-icon"
+                                           th:class="${isLiked} ? 'fas fa-heart' : 'far fa-heart'"></i>
+                                        <span class="like-label" th:text="${isLiked} ? 'Bỏ yêu thích' : 'Yêu thích'">Yêu thích</span>
                                     </button>
                                 </div>
                             </div>
