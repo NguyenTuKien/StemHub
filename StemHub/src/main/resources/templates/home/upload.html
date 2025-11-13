@@ -59,11 +59,12 @@
 
                         <div class="drag-drop-area" id="dragDropArea">
                 <input type="file" class="file-input-hidden" id="fileInput" name="file"
-                    accept=".pdf,application/pdf" required>
+                    accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.md,.jpg,.jpeg,.png,.gif,.bmp,.webp" required>
                             <div class="upload-content">
                                 <i class="fas fa-cloud-upload-alt upload-icon"></i>
                                 <h4>Kéo thả tệp vào đây hoặc click để chọn</h4>
-                                <p class="text-muted">Chỉ hỗ trợ: PDF (.pdf)</p>
+                                <p class="text-muted">Hỗ trợ: PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, TXT, JPG/PNG/JPEG/WEBP/GIF/BMP</p>
+                                <p class="text-muted">Nếu không phải PDF, bắt buộc chọn hình thu nhỏ</p>
                                 <p class="text-muted">Kích thước tối đa: 500MB</p>
                             </div>
                         </div>
@@ -126,7 +127,7 @@
                     </div>
 
                     <!-- Thumbnail Upload -->
-                    <div class="form-section">
+                    <div class="form-section" id="thumbnailSection">
                         <h5><i class="fas fa-image me-2"></i>Hình thu nhỏ (Tùy chọn)</h5>
 
                         <div class="thumbnail-upload">
@@ -135,6 +136,8 @@
                                 <i class="fas fa-plus"></i>
                                 <span>Thêm hình thu nhỏ</span>
                             </label>
+                            <small id="thumbnailHelp" class="text-muted d-block mt-2">Bắt buộc nếu tài liệu không phải PDF</small>
+                            <div id="thumbnailError" class="invalid-feedback d-block" style="display: none;">Vui lòng chọn hình thu nhỏ cho tài liệu không phải PDF.</div>
                             <div class="thumbnail-preview" id="thumbnailPreview" style="display: none;">
                                 <img src="" alt="Thumbnail preview">
                                 <button type="button" class="btn-remove-thumbnail" id="removeThumbnail">

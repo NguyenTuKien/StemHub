@@ -109,7 +109,7 @@
                                 <!-- PDF Viewer -->
                                 <div class="pdf-viewer" th:if="${document.fileUrl != null and document.fileUrl.toLowerCase().endsWith('.pdf')}">
                                     <iframe th:src="${document.fileUrl}" 
-                                            style="width: 100%; height: 600px; border: none;"
+                                            style="width: 100%; height: 810px; border: none;"
                                             loading="lazy">
                                         <p>Trình duyệt của bạn không hỗ trợ hiển thị PDF. 
                                            <a th:href="${document.fileUrl}" target="_blank">Nhấp vào đây để tải file</a>
@@ -128,7 +128,7 @@
                                     <img th:src="${document.fileUrl}" 
                                          th:alt="${document.title}" 
                                          class="img-fluid"
-                                         style="max-width: 100%; height: auto; max-height: 600px; object-fit: contain;">
+                                         style="max-width: 100%; height: auto; max-height: 810px; object-fit: contain;">
                                 </div>
                                 
                                 <!-- Text File Viewer -->
@@ -141,7 +141,7 @@
                                                                   document.fileUrl.toLowerCase().endsWith('.json') or 
                                                                   document.fileUrl.toLowerCase().endsWith('.xml'))}">
                                     <iframe th:src="${document.fileUrl}" 
-                                            style="width: 100%; height: 600px; border: none; background: white;"
+                                            style="width: 100%; height: 810px; border: none; background: white;"
                                             loading="lazy">
                                         <p>Không thể hiển thị file văn bản. 
                                            <a th:href="${document.fileUrl}" target="_blank">Nhấp vào đây để xem file</a>
@@ -157,31 +157,12 @@
                                                                    document.fileUrl.toLowerCase().endsWith('.xlsx') or 
                                                                    document.fileUrl.toLowerCase().endsWith('.ppt') or 
                                                                    document.fileUrl.toLowerCase().endsWith('.pptx'))}">
-                                    <div class="text-center py-5">
-                                        <i class="fas fa-file-word fa-5x text-primary mb-3" th:if="${document.fileUrl != null and (document.fileUrl.toLowerCase().endsWith('.doc') or document.fileUrl.toLowerCase().endsWith('.docx'))}"></i>
-                                        <i class="fas fa-file-excel fa-5x text-success mb-3" th:if="${document.fileUrl != null and (document.fileUrl.toLowerCase().endsWith('.xls') or document.fileUrl.toLowerCase().endsWith('.xlsx'))}"></i>
-                                        <i class="fas fa-file-powerpoint fa-5x text-warning mb-3" th:if="${document.fileUrl != null and (document.fileUrl.toLowerCase().endsWith('.ppt') or document.fileUrl.toLowerCase().endsWith('.pptx'))}"></i>
-                                        
-                                        <h5 class="mb-3" th:text="${document.title}">Tên tài liệu</h5>
-                                        <p class="text-muted mb-4">
-                                            <i class="fas fa-info-circle me-2"></i>
-                                            Định dạng: <span th:text="${document.fileUrl != null and document.fileUrl.contains('.') ? #strings.toUpperCase(document.fileUrl.substring(document.fileUrl.lastIndexOf('.') + 1)) : 'FILE'}">FILE</span>
-                                        </p>
-                                        
-                                        <div class="alert alert-info" role="alert">
-                                            <i class="fas fa-lightbulb me-2"></i>
-                                            File Office cần được tải xuống để xem. Nhấp vào nút bên dưới để tải file.
-                                        </div>
-                                        
-                                        <!-- Online Office Viewer Option -->
-                                        <div class="mb-3">
-                                            <a th:href="'https://view.officeapps.live.com/op/embed.aspx?src=' + ${document.fileUrl}" 
-                                               target="_blank" 
-                                               class="btn btn-info btn-lg me-2">
-                                                <i class="fas fa-eye me-2"></i>Xem Online (Office)
-                                            </a>
-                                        </div>
-                                    </div>
+                                    <iframe
+                                        th:src="@{'https://view.officeapps.live.com/op/embed.aspx'(src=${document.fileUrl})}"
+                                        style="width: 100%; height: 810px; border: none; background: #fff;"
+                                        allowfullscreen
+                                        loading="lazy">
+                                    </iframe>
                                 </div>
                                 
                                 <!-- Generic File Viewer for other formats -->

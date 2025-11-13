@@ -15,29 +15,96 @@ document.addEventListener('DOMContentLoaded', function() {
     const authorIdFieldWrap = document.getElementById('authorIdFieldWrap');
     const changeAuthorIdBtn = document.getElementById('changeAuthorIdBtn');
 
-    // Check authentication on page load
+    // --- Helper functions (placed before usage to avoid scope/hoist issues) ---
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function displaySelectedFile(file) {
+        const fileName = file.name;
+        const fileSize = formatFileSize(file.size);
+        if (selectedFile) {
+            const fileNameEl = selectedFile.querySelector('.file-name');
+            const fileSizeEl = selectedFile.querySelector('.file-size');
+            if (fileNameEl) fileNameEl.textContent = fileName;
+            if (fileSizeEl) fileSizeEl.textContent = fileSize;
+            selectedFile.style.display = 'block';
+        }
+        if (dragDropArea) {
+            const content = dragDropArea.querySelector('.upload-content');
+            if (content) {
+                content.innerHTML = `
+                    <i class="fas fa-check-circle upload-icon" style="color: #28a745;"></i>
+                    <h4 style="color: #28a745;">Tệp đã được chọn!</h4>
+                    <p class="text-muted">Click để chọn tệp khác</p>
+                `;
+            }
+        }
+    }
+
+    function handleThumbnailPreview(e) {
+        const file = e.target.files && e.target.files[0];
+        if (file && thumbnailPreview) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = thumbnailPreview.querySelector('img');
+                if (img) {
+                    img.src = ev.target.result;
+                    thumbnailPreview.style.display = 'block';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function resetUploadArea() {
+        if (selectedFile) selectedFile.style.display = 'none';
+        if (dragDropArea) {
+            const content = dragDropArea.querySelector('.upload-content');
+            if (content) {
+                content.innerHTML = `
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h4>Kéo thả tệp vào đây hoặc click để chọn</h4>
+                    <p class="text-muted">Hỗ trợ: PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, TXT, JPG/PNG/JPEG/WEBP/GIF/BMP</p>
+                    <p class="text-muted">Nếu không phải PDF, bắt buộc chọn hình thu nhỏ</p>
+                    <p class="text-muted">Kích thước tối đa: 500MB</p>
+                `;
+            }
+        }
+    }
+
+    // Check authentication on page load (supports JWT or session-based)
     checkAuthenticationStatus();
+
+    function isSessionAuthenticated() {
+        // If server rendered a hidden input with userId or any element gated by sec:authorize,
+        // treat as authenticated via session
+        return !!(authorIdInput && authorIdInput.value);
+    }
 
     function checkAuthenticationStatus() {
         const token = localStorage.getItem('token');
+        const sessionAuth = isSessionAuthenticated();
 
-        if (!token) {
-            // User is not logged in - show warning and disable submit
+        if (!token && !sessionAuth) {
+            // Neither JWT nor session auth is present
             showAuthWarning();
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.title = 'Bạn cần đăng nhập để tải lên tài liệu';
             }
         } else {
-            // User is logged in - enable submit
+            // Authenticated by either method
             if (submitBtn) {
                 submitBtn.disabled = false;
+                submitBtn.title = '';
             }
-
-            // Don't set authorId from token - let backend handle it from JWT
-            // Backend should extract user ID from the Authorization header
+            // Let backend resolve authorId from JWT/session if missing
             if (authorIdInput && !authorIdInput.value) {
-                // Leave empty - backend will get user ID from JWT token
                 authorIdInput.value = '';
             }
         }
@@ -67,15 +134,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize price field visibility
     updatePriceVisibility();
 
-    // Load authorId from localStorage if present
+    // Load authorId from localStorage if present (best-effort; optional)
     try {
         const savedAuthorId = localStorage.getItem('authorId');
-        if (savedAuthorId && authorIdInput) {
+        if (!isSessionAuthenticated() && savedAuthorId && authorIdInput) {
             authorIdInput.value = savedAuthorId;
             if (authorSavedInfo && authorSavedValue && authorIdFieldWrap) {
                 authorSavedValue.textContent = savedAuthorId;
                 authorSavedInfo.style.display = 'block';
-                // Keep the input visible but de-emphasize; or hide completely if muốn
                 authorIdFieldWrap.style.display = 'none';
             }
         }
@@ -98,29 +164,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Drag and drop functionality
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dragDropArea.addEventListener(eventName, preventDefaults, false);
+        if (dragDropArea) {
+            dragDropArea.addEventListener(eventName, preventDefaults, false);
+        }
         document.body.addEventListener(eventName, preventDefaults, false);
     });
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dragDropArea.addEventListener(eventName, highlight, false);
-    });
+    if (dragDropArea) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, highlight, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dragDropArea.addEventListener(eventName, unhighlight, false);
+        });
+        dragDropArea.addEventListener('drop', handleDrop, false);
+        // Only trigger file input when clicking directly on drag drop area, not its children
+        dragDropArea.addEventListener('click', function(e) {
+            if (e.target === dragDropArea || e.target.closest('.upload-content')) {
+                fileInput && fileInput.click();
+            }
+        });
+    }
 
-    ['dragleave', 'drop'].forEach(eventName => {
-        dragDropArea.addEventListener(eventName, unhighlight, false);
-    });
-
-    dragDropArea.addEventListener('drop', handleDrop, false);
-
-    // Only trigger file input when clicking directly on drag drop area, not its children
-    dragDropArea.addEventListener('click', function(e) {
-        // Only trigger if clicking on the drag-drop area itself, not on buttons or other elements
-        if (e.target === dragDropArea || e.target.closest('.upload-content')) {
-            fileInput.click();
-        }
-    });
-
-    fileInput.addEventListener('change', handleFiles);
+    if (fileInput) fileInput.addEventListener('change', handleFiles);
 
     // Thumbnail preview functionality
     if (thumbnailInput) {
@@ -142,23 +208,63 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Check if thumbnail is required for non-PDF files
+    function checkThumbnailRequired() {
+        const file = fileInput && fileInput.files && fileInput.files[0];
+        const errorEl = document.getElementById('thumbnailError');
+        const sectionEl = document.getElementById('thumbnailSection');
+        if (!file) {
+            if (errorEl) errorEl.style.display = 'none';
+            return true; // No file, let other validations handle
+        }
+
+        const ext = file.name.split('.').pop().toLowerCase();
+        const isPdf = ext === 'pdf';
+
+        if (!isPdf) {
+            const hasThumbnail = thumbnailInput && thumbnailInput.files && thumbnailInput.files.length > 0;
+            if (!hasThumbnail) {
+                if (errorEl) errorEl.style.display = 'block';
+                if (sectionEl) sectionEl.scrollIntoView({ behavior: 'instant', block: 'center' });
+                alert('Tài liệu không phải PDF yêu cầu bắt buộc phải có hình thu nhỏ. Trang sẽ tải lại ngay.');
+                // Use a slight delay with location.replace to guarantee navigation
+                setTimeout(() => { window.location.replace(window.location.href); }, 50);
+                return false;
+            }
+        }
+
+        if (errorEl) errorEl.style.display = 'none';
+        return true;
+    }
+
+    // Live toggle thumbnail error when user selects thumbnail after picking non-PDF
+    if (thumbnailInput) {
+        thumbnailInput.addEventListener('change', function() {
+            // If a non-PDF file is chosen and now thumbnail exists, hide error
+            const file = fileInput && fileInput.files && fileInput.files[0];
+            if (file) checkThumbnailRequired();
+        });
+    }
+
+    // Improve submit button UX during validation
+    function setSubmitBusy(busy, labelWhenReady = 'Tải lên') {
+        if (!submitBtn) return;
+        submitBtn.disabled = !!busy;
+        submitBtn.innerHTML = busy
+            ? '<i class="fas fa-spinner fa-spin me-2"></i>Đang kiểm tra...'
+            : `<i class="fas fa-upload me-2"></i>${labelWhenReady}`;
+    }
+
     // Form submission with validation
     if (uploadForm) {
         uploadForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent normal form submission
+            e.preventDefault();
+            setSubmitBusy(true);
 
-            // Show loading state
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tải lên...';
-            }
-            
-            // Frontend validations to match backend
             const file = fileInput && fileInput.files && fileInput.files[0];
             const category = document.getElementById('category');
             const courseName = document.getElementById('courseName');
 
-            // Basic required checks
             let errorMsg = '';
             if (!file) errorMsg = 'Vui lòng chọn tệp tài liệu.';
             else if (!category || !category.value) errorMsg = 'Vui lòng chọn danh mục.';
@@ -166,36 +272,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (errorMsg) {
                 alert(errorMsg);
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Tải lên';
-                }
+                setSubmitBusy(false);
                 return;
             }
 
-            // Submit via fetch with JWT token
-            submitWithJWT();
+            if (!checkThumbnailRequired()) {
+                setSubmitBusy(false);
+                return;
+            }
+
+            // Submit via fetch. Use JWT if available, otherwise rely on session cookie
+            submitWithAuth();
         });
     }
 
-    async function submitWithJWT() {
+    async function submitWithAuth() {
         const token = localStorage.getItem('token');
-
-        if (!token) {
-            alert('Bạn cần đăng nhập để tải lên tài liệu!');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Tải lên';
-            }
-            return;
-        }
 
         try {
             const formData = new FormData();
 
             // Add file
-            const file = fileInput.files[0];
-            formData.append('file', file);
+            if (fileInput && fileInput.files[0]) {
+                formData.append('file', fileInput.files[0]);
+            }
 
             // Add form fields
             formData.append('title', document.getElementById('title').value);
@@ -204,44 +304,40 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('description', document.getElementById('description').value);
 
             // Add thumbnail if selected
-            const thumbnailFile = thumbnailInput.files[0];
+            const thumbnailFile = thumbnailInput && thumbnailInput.files ? thumbnailInput.files[0] : null;
             if (thumbnailFile) {
                 formData.append('thumbnail', thumbnailFile);
             }
 
-            // Don't add authorId - let backend extract from JWT
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
 
             const response = await fetch('/document/upload', {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
+                headers,
+                body: formData,
+                credentials: 'same-origin' // send session cookies when present
             });
 
             if (response.ok) {
-                // Success: keep the same button color, just update text
                 if (submitBtn) {
                     submitBtn.innerHTML = '<i class="fas fa-check me-2"></i>Tải lên thành công!';
                     submitBtn.classList.remove('btn-primary');
                     submitBtn.classList.add('btn-success');
                 }
-
-                // Redirect after delay
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 1500);
-
+                setTimeout(() => { window.location.href = '/'; }, 1500);
             } else {
-                // Error
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Có lỗi xảy ra khi tải lên');
+                // Attempt to parse error payload; if not JSON, fallback to text
+                let message = 'Có lỗi xảy ra khi tải lên';
+                try { const data = await response.json(); message = data.detail || data.message || message; }
+                catch { try { message = await response.text() || message; } catch {} }
+                throw new Error(message);
             }
-
         } catch (error) {
             console.error('Upload error:', error);
             alert('Lỗi: ' + error.message);
-
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Tải lên';
@@ -278,21 +374,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function highlight(e) {
-        dragDropArea.classList.add('drag-over');
+        if (dragDropArea) dragDropArea.classList.add('drag-over');
     }
 
     function unhighlight(e) {
-        dragDropArea.classList.remove('drag-over');
+        if (dragDropArea) dragDropArea.classList.remove('drag-over');
     }
 
     function handleDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
-        fileInput.files = files;
+        if (fileInput) fileInput.files = files;
         handleFiles();
     }
 
     function handleFiles() {
+        if (!fileInput) return;
         const files = fileInput.files;
         if (files.length > 0) {
             const file = files[0];
@@ -305,12 +402,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Validate file type - Only PDF is allowed
-            const allowedTypes = ['.pdf'];
+            // Validate file type - Allow multiple formats
+            const allowedExts = ['.pdf','.doc','.docx','.ppt','.pptx','.xls','.xlsx','.txt','.md','.jpg','.jpeg','.png','.gif','.bmp','.webp'];
             const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
             
-            if (!allowedTypes.includes(fileExtension)) {
-                alert('Chỉ hỗ trợ file PDF (.pdf).');
+            if (!allowedExts.includes(fileExtension)) {
+                alert('Định dạng không được hỗ trợ. Hãy chọn: PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, TXT, JPG/PNG/JPEG/WEBP/GIF/BMP.');
                 fileInput.value = '';
                 resetUploadArea();
                 return;
@@ -320,51 +417,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function displaySelectedFile(file) {
-        const fileName = file.name;
-        const fileSize = formatFileSize(file.size);
-        
-        selectedFile.querySelector('.file-name').textContent = fileName;
-        selectedFile.querySelector('.file-size').textContent = fileSize;
-        selectedFile.style.display = 'block';
-        
-        // Update drag drop area
-        dragDropArea.querySelector('.upload-content').innerHTML = `
-            <i class="fas fa-check-circle upload-icon" style="color: #28a745;"></i>
-            <h4 style="color: #28a745;">Tệp đã được chọn!</h4>
-            <p class="text-muted">Click để chọn tệp khác</p>
-        `;
-    }
-
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-
-    function handleThumbnailPreview(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                thumbnailPreview.src = e.target.result;
-                thumbnailPreview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function resetUploadArea() {
-        selectedFile.style.display = 'none';
-        dragDropArea.querySelector('.upload-content').innerHTML = `
-            <i class="fas fa-cloud-upload-alt upload-icon"></i>
-            <h4>Kéo thả tệp vào đây hoặc click để chọn</h4>
-            <p class="text-muted">Chỉ hỗ trợ: PDF (.pdf)</p>
-            <p class="text-muted">Kích thước tối đa: 500MB</p>
-        `;
-    }
 
     // Auto-resize textarea
     const textareas = document.querySelectorAll('textarea');

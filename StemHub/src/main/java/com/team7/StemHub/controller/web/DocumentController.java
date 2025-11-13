@@ -82,17 +82,22 @@ public class DocumentController {
                 redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/document/upload";
             }
-            // Enforce PDF-only uploads
+
+            // Allow multiple formats. Validate against a safe whitelist (extensions in lower-case)
             String originalFilename = documentRequest.getFile().getOriginalFilename();
-            String contentType = documentRequest.getFile().getContentType();
-            boolean isPdfByName = originalFilename != null && originalFilename.toLowerCase().endsWith(".pdf");
-            boolean isPdfByMime = contentType != null && contentType.equalsIgnoreCase("application/pdf");
-            if (!(isPdfByName || isPdfByMime)) {
-                redirectAttributes.addFlashAttribute("error", "Chỉ cho phép tải lên tệp PDF (.pdf).");
-                redirectAttributes.addFlashAttribute("message", "Chỉ cho phép tải lên tệp PDF (.pdf).");
+            String ext = originalFilename != null && originalFilename.contains(".")
+                    ? originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase()
+                    : "";
+            String[] allowed = {"pdf","doc","docx","xls","xlsx","ppt","pptx","txt","md","jpg","jpeg","png","gif","bmp","webp"};
+            boolean supported = java.util.Arrays.asList(allowed).contains(ext);
+            if (!supported) {
+                redirectAttributes.addFlashAttribute("error", "Định dạng không được hỗ trợ. Hãy chọn: PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, TXT, JPG/PNG/JPEG/WEBP/GIF/BMP.");
+                redirectAttributes.addFlashAttribute("message", "Định dạng không được hỗ trợ. Hãy chọn: PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, TXT, JPG/PNG/JPEG/WEBP/GIF/BMP.");
                 redirectAttributes.addFlashAttribute("messageType", "error");
                 return "redirect:/document/upload";
             }
+
+            // Proceed with facade upload
             r2StorageFacade.uploadDocument(documentRequest);
             redirectAttributes.addFlashAttribute("success", "Tải tài liệu lên thành công!");
             redirectAttributes.addFlashAttribute("message", "Tải tài liệu lên thành công!");
