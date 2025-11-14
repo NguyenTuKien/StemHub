@@ -301,6 +301,33 @@
     word-break: break-word;
 }
 
+/* Breadcrumb styling inside document hero */
+.document-hero .breadcrumb {
+    --bs-breadcrumb-divider: '/';
+    background: transparent;
+    padding: 0;
+    margin-bottom: 1.25rem;
+}
+.document-hero .breadcrumb-item + .breadcrumb-item::before {
+    color: rgba(255,255,255,0.55);
+}
+.document-hero .breadcrumb-item a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color .2s ease;
+}
+.document-hero .breadcrumb-item a:hover {
+    color: #e0f7f4;
+    text-decoration: none;
+}
+.document-hero .breadcrumb-item.active,
+.document-hero .breadcrumb-item.active a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-weight: 600;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .file-hero {
