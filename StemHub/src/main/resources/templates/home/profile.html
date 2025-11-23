@@ -75,10 +75,10 @@
                                 </small>
                                 <div class="btn-group">
                                     <a class="btn btn-sm btn-primary download-btn"
-                                       th:href="${doc.fileUrl}"
+                                       th:classappend="${currentUserId == null} ? 'disabled'"
+                                       th:href="${currentUserId != null} ? ${doc.fileUrl} : 'javascript:void(0)'"
                                        target="_blank"
-                                       download
-                                       th:attr="data-document-id=${doc.documentId},data-file-url=${doc.fileUrl}">
+                                       th:attr="data-document-id=${doc.documentId},data-file-url=${doc.fileUrl}, aria-disabled=${currentUserId == null}">
                                         <i class="fas fa-download me-1"></i>Tải xuống
                                     </a>
                                     <button class="btn btn-sm like-btn"

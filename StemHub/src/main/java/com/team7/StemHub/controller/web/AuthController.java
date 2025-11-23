@@ -3,6 +3,7 @@ package com.team7.StemHub.controller.web;
 import com.team7.StemHub.dto.request.SignupRequest;
 import com.team7.StemHub.exception.RegistrationException;
 import com.team7.StemHub.facade.AuthFacade;
+import jakarta.servlet.http.HttpServletRequest; // <--- Nhớ import cái này
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ public class AuthController {
     @GetMapping("/login")
     public String login(@RequestParam(name = "error", required = false) String error,
                         @RequestParam(name = "logout", required = false) String logout,
+                        HttpServletRequest request, // 1. Thêm tham số này để lấy thông tin request
                         Model model) {
         if (error != null) {
             model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng.");
@@ -28,6 +30,13 @@ public class AuthController {
         if (logout != null) {
             model.addAttribute("message", "Bạn đã đăng xuất thành công.");
         }
+
+        String referer = request.getHeader("Referer");
+
+        if (referer != null && !referer.contains("/auth/login") && !referer.contains("/auth/register")) {
+            model.addAttribute("previousUrl", referer);
+        }
+
         return "auth/enter";
     }
 
@@ -41,7 +50,7 @@ public class AuthController {
         try {
             authFacade.register(dto);
             model.addAttribute("message", "Đăng ký thành công. Vui lòng đăng nhập.");
-            return "auth/enter"; // Render trang đăng nhập với thông báo thành công
+            return "auth/enter";
         } catch (RegistrationException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("username", dto.getUsername());

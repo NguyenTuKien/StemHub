@@ -20,8 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final MyUserDetailsService myUserDetailsService;
-    // Temporarily remove JWT filter to test form login
-    // private final JwtAuthenticationFilter jwtFilter;
+    private final CustomAuthSuccessHandler customSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -31,17 +30,11 @@ public class SecurityConfig {
                         // Cho phép truy cập các trang xác thực
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
-
                         // Cho phép trang home cho tất cả users
-                        .requestMatchers("/", "/about","/home", "/category", "/category/**").permitAll()
-
+                        .requestMatchers("/", "/about","/home", "/category", "/category/**", "/search", "/user/profile").permitAll()
                         // Cho phép tất cả static resources
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/style/**", "/script/**", "/Assets/**").permitAll()
                         .requestMatchers("/static/**", "/webjars/**").permitAll()
-
-                        // Các trang yêu cầu đăng nhập
-                        .requestMatchers("/document/**", "/user/**", "/favorites", "/search").authenticated()
-
                         // Tất cả các request khác yêu cầu xác thực
                         .anyRequest().authenticated()
                 )
@@ -50,7 +43,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/auth/login") // URL xử lý form submit
                         .usernameParameter("username")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/")
+                        .successHandler(customSuccessHandler)
                         .failureUrl("/auth/login?error=true")
                         .permitAll()
                 )
