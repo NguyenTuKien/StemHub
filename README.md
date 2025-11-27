@@ -72,3 +72,4 @@ java -jar target/StemHub-*.jar
 * Hỗ trợ file `docx` và `pptx`, cho phép upload video.
 * Tích hợp `elastic search`.
 * Nâng cấp, cải thiện các tính năng hiện tại.
+## Team 7
