@@ -1,12 +1,8 @@
 package com.team7.StemHub.controller.api;
 
-import com.team7.StemHub.dto.request.SignupRequest;
-import com.team7.StemHub.model.User;
-import com.team7.StemHub.model.enums.Role;
-import com.team7.StemHub.service.AuthService;
-import com.team7.StemHub.util.JwtUtil;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,10 +10,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.team7.StemHub.dto.request.SignupRequest;
+import com.team7.StemHub.model.User;
+import com.team7.StemHub.model.enums.Role;
+import com.team7.StemHub.service.AuthService;
+import com.team7.StemHub.util.JwtUtil;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -85,6 +91,7 @@ public class AuthAPIController {
         body.put("userId", user.getId());
         body.put("username", user.getUsername());
         body.put("fullname", user.getFullname());
+        //check role
         return ResponseEntity.ok(body);
     }
 }
