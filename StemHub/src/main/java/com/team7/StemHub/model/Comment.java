@@ -36,6 +36,6 @@ public class Comment {
     private String content;
 
     @CreationTimestamp
-    @Column(name = "createAt", nullable = false)
-    private LocalDateTime createAt;
+    @Column(name = "createdAt", nullable = false)
+    private LocalDateTime createdAt;
 }

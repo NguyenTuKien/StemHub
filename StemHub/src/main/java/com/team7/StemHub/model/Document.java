@@ -1,6 +1,5 @@
 package com.team7.StemHub.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.team7.StemHub.model.enums.Category;
 import jakarta.persistence.*;
@@ -36,7 +35,6 @@ public class Document {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "courseId", nullable = false)
-    @JsonIgnore
     private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,13 +57,12 @@ public class Document {
     @ColumnDefault("0")
     private int downloadCount = 0;
 
-    @Column(name = "createAt", nullable = false)
-    private LocalDateTime createAt;
+    @Column(name = "createdAt", nullable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
     @ManyToMany(mappedBy = "favoritesDocuments")
-    @JsonIgnore
     private Set<User> favoredByUsers;
 }

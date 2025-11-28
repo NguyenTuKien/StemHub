@@ -2,8 +2,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const backToTopBtn = document.getElementById('backToTop');
     const newsletterForm = document.querySelector('.newsletter-form');
     
-    // Back to top functionality
+    // Back to top functionality (guard when element is absent)
     window.addEventListener('scroll', function() {
+        if (!backToTopBtn) return;
         if (window.scrollY > 300) {
             backToTopBtn.classList.add('show');
         } else {
@@ -11,13 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    backToTopBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    if (backToTopBtn) {
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-    });
-    
+    }
+
     // Newsletter form
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', function(e) {

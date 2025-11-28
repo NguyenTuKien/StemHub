@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public enum Category {
+    NEWS ("Tin tức"),
     LESSON ("Bài giảng"),
-    PROJECT ("Dự án"),
-    REPORT ("Báo cáo"),
+    PROJECT ("Thực hành"),
     RESEARCH ("Nghiên cứu"),
-    DOCUMENT ("Tài liệu học tập"),
+    REFERENCE ("Tài liệu học tập"),
+    OUTLINE ("Đề cương"),
     EXAM ("Đề thi/Đề kiểm tra"),
     OTHERS ("Khác");
 

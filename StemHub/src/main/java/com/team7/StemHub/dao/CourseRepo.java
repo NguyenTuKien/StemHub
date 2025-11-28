@@ -18,4 +18,6 @@ public interface CourseRepo extends JpaRepository<Course, UUID> {
     List<Course> findByOtherNameContainingIgnoreCase(String keyword);
 
     List<Course> findByCourseIdContainingIgnoreCase(String keyword);
+
+    List<Course> findAllByOrderByCourseId();
 }

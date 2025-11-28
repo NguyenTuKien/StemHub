@@ -1,51 +1,38 @@
 package com.team7.StemHub.controller.web;
 
-import com.team7.StemHub.dto.response.DocumentResponse;
-import com.team7.StemHub.dto.response.UserResponse;
-import com.team7.StemHub.model.User;
-import com.team7.StemHub.model.enums.Category;
-import com.team7.StemHub.service.DocumentService;
-import com.team7.StemHub.service.UserService;
+import com.team7.StemHub.dto.view.HomePageView;
+import com.team7.StemHub.facade.HomePageFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 public class HomePageController {
-    private final DocumentService documentService;
-    private final UserService userService;
 
-    @GetMapping("/")
-    public String home(Model model) {
-        var topDocuments = documentService.getTopDocument();
-        List<DocumentResponse> topDocumentsDTO = topDocuments.stream().map(DocumentResponse::new).toList();
-        var newestDocuments = documentService.getNewestDocuments();
-        List<DocumentResponse> newestDocumentsDTO = newestDocuments.stream().map(DocumentResponse::new).toList();
-        List<User> topUsers = userService.getTop10UsersOrderByDocument();
-        List<UserResponse> topUsersDTO = topUsers.stream().map(UserResponse::new).toList();
-        List<Category> categories = Category.getAllDisplayNames();
-        model.addAttribute("topDocuments", topDocumentsDTO);
-        model.addAttribute("newestDocuments", newestDocumentsDTO);
-        model.addAttribute("users", topUsersDTO);
-        model.addAttribute("categories", categories);
+    private final HomePageFacade homePageFacade;
+
+    @GetMapping("")
+    public String home(Model model, @RequestParam(defaultValue = "1") int page) {
+        HomePageView viewData = homePageFacade.prepareHomePageData(page);
+        model.addAttribute("newestDocumentsPage", viewData.getNewestDocumentsPage());
+        model.addAttribute("topDocuments", viewData.getTopDocuments());
+        model.addAttribute("users", viewData.getTopUsers());
+        model.addAttribute("categories", viewData.getCategories());
         return "home/home";
     }
 
     @GetMapping("/category")
-    public String category(@RequestParam String category, Model model) {
-        List <DocumentResponse> topDocuments = documentService.getDocumentsByCategorySortedByDownloadCount(category).stream().map(DocumentResponse::new).toList();
-        List <DocumentResponse> newestDocuments = documentService.getDocumentsByCategorySortedByCreateAt(category).stream().map(DocumentResponse::new).toList();
-        List <UserResponse> topUsers = userService.getTop10UsersOrderByDocument().stream().map(UserResponse::new).toList();
-        List <Category> categories = Category.getAllDisplayNames();
-        model.addAttribute("topDocuments", topDocuments);
-        model.addAttribute("newestDocuments", newestDocuments);
-        model.addAttribute("users", topUsers);
-        model.addAttribute("categories", categories);
+    public String category(@RequestParam String category, Model model, @RequestParam(defaultValue = "1") int page) {
+        HomePageView viewData = homePageFacade.prepareCategoryPageData(category, page);
+        model.addAttribute("topDocuments", viewData.getTopDocuments());
+        model.addAttribute("newestDocumentsPage", viewData.getNewestDocumentsPage());
+        model.addAttribute("users", viewData.getTopUsers());
+        model.addAttribute("categories", viewData.getCategories());
+        model.addAttribute("category", viewData.getCategory());
         return "home/home";
     }
 

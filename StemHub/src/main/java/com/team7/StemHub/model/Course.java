@@ -1,6 +1,5 @@
 package com.team7.StemHub.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,6 +30,5 @@ public class Course {
     private String otherName;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<Document> docs;
 }

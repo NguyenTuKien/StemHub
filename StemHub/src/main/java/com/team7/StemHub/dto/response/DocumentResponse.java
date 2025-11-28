@@ -34,7 +34,7 @@ public class DocumentResponse {
         this.courseName = (document != null && document.getCourse() != null) ? document.getCourse().getCourseName() : null;
         this.fileUrl = document != null ? document.getFilePath() : null;
         this.thumbnailUrl = document != null ? document.getThumbnailPath() : null;
-        this.createdAt = document != null ? document.getCreateAt() : null;
+        this.createdAt = document != null ? document.getCreatedAt() : null;
         this.downloadCount = document != null ? document.getDownloadCount() : null;
         this.favoriteCount = favoriteCount;
     }

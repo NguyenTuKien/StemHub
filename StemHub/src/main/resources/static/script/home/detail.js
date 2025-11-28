@@ -1,14 +1,13 @@
-// Add CSRF token for AJAX requests
+// Helper to read CSRF meta tags safely
+function getCsrf() {
+    const metaToken = document.querySelector("meta[name='_csrf']");
+    const metaHeader = document.querySelector("meta[name='_csrf_header']");
+    if (!metaToken || !metaHeader) return null;
+    return { token: metaToken.content, headerName: metaHeader.content || 'X-CSRF-TOKEN' };
+}
+
+// Enhanced notification handling
 document.addEventListener('DOMContentLoaded', function() {
-    // Create CSRF token element if it doesn't exist
-    if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = 'csrfmiddlewaretoken';
-        csrfToken.value = '{{ csrf_token }}';
-        document.body.appendChild(csrfToken);
-    }
-    
     // Enhanced notification handling
     enhanceNotifications();
 
@@ -19,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const documentId = likeBtn.getAttribute('data-document-id');
             const userId = likeBtn.getAttribute('data-user-id');
-            let liked = String(likeBtn.getAttribute('data-liked')) === 'true';
+            const initiallyLiked = String(likeBtn.getAttribute('data-liked')) === 'true';
 
             if (!userId) {
                 // Not logged in -> redirect to login
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             if (!documentId) return;
-
             // UI: disable and show spinner (preserve label and icon)
             const iconEl = likeBtn.querySelector('i');
             const labelEl = document.getElementById('likeLabel');
@@ -39,37 +37,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 const params = new URLSearchParams({ userId, documentId });
-                const res = await fetch('/like', {
+                const csrf = getCsrf();
+                const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+                if (csrf) headers[csrf.headerName] = csrf.token;
+                const res = await fetch('/api/v1/actions/like', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    headers,
                     body: params.toString(),
                     redirect: 'follow'
                 });
 
-                if (!res.ok) throw new Error('Like request failed');
+                let favoritedNow = initiallyLiked; // fallback
+                if (res.ok) {
+                    try {
+                        const data = await res.json();
+                        if (data && typeof data.favorited === 'boolean') {
+                            favoritedNow = data.favorited;
+                        }
+                    } catch (_) {
+                        // ignore JSON parse errors and use fallback
+                    }
+                }
 
-                // Toggle UI state
+                // Update UI based on server truth
                 const likeCountEl = document.getElementById('likeCount');
                 const current = parseInt(likeCountEl?.textContent || '0', 10) || 0;
-                if (liked) {
-                    // Was liked -> now unlike
-                    const newCount = Math.max(0, current - 1);
-                    if (likeCountEl) likeCountEl.textContent = String(newCount);
-                    likeBtn.classList.remove('btn-danger');
-                    likeBtn.classList.add('btn-outline-danger');
-                    if (iconEl) iconEl.className = 'far fa-heart me-2';
-                    if (labelEl) labelEl.textContent = 'Yêu thích';
-                    likeBtn.setAttribute('data-liked', 'false');
-                    liked = false;
-                } else {
-                    // Was not liked -> now like
-                    if (likeCountEl) likeCountEl.textContent = String(current + 1);
+                if (favoritedNow) {
+                    const nextCount = initiallyLiked ? current : current + 1; // increase only if it was not liked before
+                    if (likeCountEl) likeCountEl.textContent = String(nextCount);
                     likeBtn.classList.remove('btn-outline-danger');
                     likeBtn.classList.add('btn-danger');
                     if (iconEl) iconEl.className = 'fas fa-heart me-2';
                     if (labelEl) labelEl.textContent = 'Bỏ yêu thích';
                     likeBtn.setAttribute('data-liked', 'true');
-                    liked = true;
+                } else {
+                    const nextCount = initiallyLiked ? Math.max(0, current - 1) : current; // decrease only if it was liked before
+                    if (likeCountEl) likeCountEl.textContent = String(nextCount);
+                    likeBtn.classList.remove('btn-danger');
+                    likeBtn.classList.add('btn-outline-danger');
+                    if (iconEl) iconEl.className = 'far fa-heart me-2';
+                    if (labelEl) labelEl.textContent = 'Yêu thích';
+                    likeBtn.setAttribute('data-liked', 'false');
                 }
             } catch (err) {
                 console.error(err);
@@ -102,10 +110,13 @@ document.addEventListener('DOMContentLoaded', function() {
             downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tải...';
 
             try {
+                const csrf = getCsrf();
+                const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+                if (csrf) headers[csrf.headerName] = csrf.token;
                 const params = new URLSearchParams({ documentId });
-                await fetch('/download', {
+                await fetch('/api/v1/actions/download', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    headers,
                     body: params.toString(),
                     redirect: 'follow'
                 });
@@ -272,15 +283,13 @@ function detectVideoFormat(filename) {
 }
 
 function shareFile() {
+    const title = document.title;
+    const url = window.location.href;
     if (navigator.share) {
-        navigator.share({
-            title: '{{ file.title }}',
-            text: '{{ file.file_description|truncatechars:100 }}',
-            url: window.location.href
-        });
+        navigator.share({ title, url });
     } else {
         // Fallback - copy to clipboard
-        navigator.clipboard.writeText(window.location.href).then(() => {
+        navigator.clipboard.writeText(url).then(() => {
             alert('Đã sao chép liên kết vào clipboard!');
         });
     }
@@ -316,16 +325,17 @@ function toggleFavorite() {
     
     if (!fileId || !btn || !icon || !text) return;
 
+    const csrf = getCsrf();
+    const headers = { 'Content-Type': 'application/json' };
+    if (csrf) headers[csrf.headerName] = csrf.token;
+
     fetch(`/toggle-favorite/${fileId}/`, {
         method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json',
-        },
+        headers
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
+        if (data && data.success) {
             if (data.is_favorited) {
                 icon.classList.remove('far');
                 icon.classList.add('fas');
@@ -333,8 +343,8 @@ function toggleFavorite() {
                 btn.classList.remove('btn-outline-danger');
                 btn.classList.add('btn-danger');
             } else {
-        icon.classList.remove('fas');
-        icon.classList.add('far');
+                icon.classList.remove('fas');
+                icon.classList.add('far');
                 text.textContent = 'Thêm vào yêu thích';
                 btn.classList.remove('btn-danger');
                 btn.classList.add('btn-outline-danger');
@@ -344,7 +354,7 @@ function toggleFavorite() {
             const toast = document.createElement('div');
             toast.className = 'alert alert-success position-fixed';
             toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
-            toast.textContent = data.message;
+            toast.textContent = data.message || 'Thao tác thành công';
             document.body.appendChild(toast);
             
             setTimeout(() => {
@@ -360,10 +370,7 @@ function toggleFavorite() {
 
 // Track file views (could be enhanced with analytics)
 if (typeof gtag !== 'undefined') {
-    gtag('event', 'file_view', {
-        'file_title': '{{ file.title }}',
-        'file_author': '{{ file.author.username }}'
-    });
+    gtag('event', 'file_view', { page_title: document.title });
 }
 
 // Enhanced notification system
@@ -431,14 +438,84 @@ function enhanceNotifications() {
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slideOutRight {
-        from {
-            transform: translateX(0) scale(1);
-            opacity: 1;
-        }
-        to {
-            transform: translateX(100%) scale(0.95);
-            opacity: 0;
-        }
+        from { transform: translateX(0) scale(1); opacity: 1; }
+        to { transform: translateX(100%) scale(0.95); opacity: 0; }
     }
 `;
 document.head.appendChild(style);
+
+// Auto-hide toast notifications after 5 seconds
+document.addEventListener('DOMContentLoaded', function() {
+    const toasts = document.querySelectorAll('.toast');
+    toasts.forEach(function(toast) {
+        setTimeout(function() {
+            toast.classList.add('hide');
+            setTimeout(function() {
+                toast.remove();
+            }, 300);
+        }, 5000);
+    });
+});
+
+// Document actions
+function shareDocument() {
+    const title = document.title;
+    const url = window.location.href;
+    if (navigator.share) {
+        navigator.share({ title, url });
+    } else {
+        // Fallback: copy to clipboard
+        navigator.clipboard.writeText(url).then(() => {
+            alert('Link đã được sao chép vào clipboard!');
+        });
+    }
+}
+
+function reportDocument() {
+    // TODO: Implement report functionality
+    alert('Chức năng báo cáo sẽ được triển khai sau');
+}
+
+// Post comment to backend and refresh page on success
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('commentForm');
+    if (!form) return;
+    const input = document.getElementById('commentInput');
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const content = (input.value || '').trim();
+        if (!content) return;
+
+        const documentId = form.getAttribute('data-document-id');
+        const userId = form.getAttribute('data-user-id');
+
+        // Disable submit button to prevent double submission
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
+
+        try {
+            const csrf = getCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (csrf) headers[csrf.headerName] = csrf.token;
+
+            const res = await fetch('/api/v1/actions/comment', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ documentId, userId, content })
+            });
+
+            if (!res.ok) throw new Error('Post comment failed');
+
+            // Refresh the page to show the new comment
+            window.location.reload();
+
+        } catch (err) {
+            alert('Không gửi được bình luận. Vui lòng thử lại.');
+            // Re-enable submit button on error
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi';
+        }
+    });
+});

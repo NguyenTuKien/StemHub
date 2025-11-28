@@ -3,11 +3,13 @@ package com.team7.StemHub.service;
 import com.team7.StemHub.dao.DocumentRepo;
 import com.team7.StemHub.dao.UserRepo;
 import com.team7.StemHub.exception.NotFoundException;
-import com.team7.StemHub.model.Course;
 import com.team7.StemHub.model.Document;
 import com.team7.StemHub.model.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,26 +42,24 @@ public class UserService {
     }
 
     @Transactional
-    public void likeDocument(UUID userId, UUID documentId) {
+    public boolean likeDocument(UUID userId, UUID documentId) {
         User user = userRepo.findByIdWithFavorites(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        Document document = documentRepo.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found: " + documentId));
+        Document document = documentRepo.getReferenceById(documentId);
         Set<Document> favorites = user.getFavoritesDocuments();
-        if (favorites.contains(document)) {
-            favorites.remove(document);
+        boolean alreadyLiked = favorites.stream().anyMatch(d -> d.getId().equals(documentId));
+        if (alreadyLiked) {
+            favorites.removeIf(d -> d.getId().equals(documentId));
+            return false; // now unfavorited
         } else {
             favorites.add(document);
+            return true; // now favorited
         }
     }
 
-    public Set<User> searchUsers(String keyword){
-        Set<User> result = new java.util.HashSet<>();
-        List<User> byFullName = userRepo.findByFullnameContainingIgnoreCase(keyword);
-        List<User> byUsername = userRepo.findByUsernameContainingIgnoreCase(keyword);
-        result.addAll(byFullName);
-        result.addAll(byUsername);
-        return result;
+    public Page<User> searchUsers(String keyword, int page) {
+        Pageable pageRequest = PageRequest.of(page , 3);
+        return userRepo.searchByFullnameOrUsername(keyword, pageRequest);
     }
 
     public User findByUsernameWithAllData(String username) {
